@@ -1,14 +1,15 @@
 toneleros.in {
-    # Servir el Frontend (React en puerto 3000)
+    # Servir el Frontend
     handle {
         reverse_proxy frontend:3000
     }
 
-    # Redirigir la API al Backend (FastAPI en puerto 8000)
-    handle_path /api* {
+    # Redirigir la API al Backend
+    # Usamos reverse_proxy sin quitar el prefijo /api si el backend lo espera
+    # O permitimos que pase la ruta tal cual
+    handle /api* {
         reverse_proxy backend:8000
     }
 
-    # Optimización de carga
     encode zstd gzip
 }
