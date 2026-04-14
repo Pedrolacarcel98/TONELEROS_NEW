@@ -1,0 +1,138 @@
+.page {
+  padding-bottom: 60px;
+}
+
+.header {
+  margin: 40px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+}
+
+.controls {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.tabs {
+  display: flex;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.tab {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.activeTab {
+  background: var(--accent);
+  color: #000;
+}
+
+.uploadBtn {
+  background: var(--accent);
+  color: #000;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 24px;
+}
+
+.itemCard {
+  background: var(--card-bg);
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.itemCard:hover {
+  transform: translateY(-5px);
+  border-color: var(--accent);
+}
+
+.preview {
+  height: 200px;
+  background: #000;
+  position: relative;
+  cursor: pointer;
+}
+
+.preview img, .preview video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.5);
+  transition: filter 0.3s;
+}
+
+.itemCard:hover .preview img, 
+.itemCard:hover .preview video {
+  filter: grayscale(0);
+}
+
+.itemInfo {
+  padding: 16px;
+}
+
+.fileName {
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 0.9rem;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.actionBtn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.actionBtn:hover {
+  background: var(--accent);
+  color: #000;
+}
+
+.deleteBtn:hover {
+  background: var(--danger) !important;
+  color: white !important;
+  border-color: var(--danger);
+}
+
+.modal {
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(10px);
+}
+
+@media (max-width: 640px) {
+  .header { flex-direction: column; align-items: stretch; }
+  .controls { flex-direction: column; align-items: stretch; }
+  .tabs { width: 100%; }
+  .tab { flex: 1; }
+}

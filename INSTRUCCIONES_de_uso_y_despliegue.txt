@@ -1,0 +1,16 @@
+Docker version 28.5.1
+
+1. Descargar Docker Desktop y abrirlo (versión: Docker Compose version v2.40.2-desktop.1)
+
+2. Abrir un terminal dentro de la carpeta "toneleros" (carpeta raíz del proyecto, donde esta el achivo "docker-compose.yml") y ejecutar comando: "docker-compose up -d --build"
+
+4. phpmyadmin estará en localhost:8081 (es la interfaz para crear/modificar bases de datos)
+entrar con:
+ - user: toneleros
+ - password: ssiidb123
+
+5. Dentro de phpmyadmin debe haber creada una base de datos llamada toneleros, debe seleccionarla e importar (arriba a la derecha) el archivo sql --> "toneleros_db.sql". esto creara la base de datos con todo lo necesario
+
+6. Probar la web en localhost:8082
+user: Pedro	
+password: Pedro123?

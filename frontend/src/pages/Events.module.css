@@ -1,0 +1,27 @@
+.page {
+  padding-bottom: 60px;
+}
+
+.header {
+  margin: 40px 0;
+  color: white;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.formSection {
+  margin-bottom: 40px;
+}
+
+.listSection {
+  margin-top: 20px;
+}

@@ -1,0 +1,34 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command: python run_prod.py
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:////data/toneleros.db
+      - SECRET_KEY=tu-clave-secreta-cambiala-ya
+      - DEBUG=False
+      - ALLOWED_ORIGINS=["http://tu-dominio.com", "https://tu-dominio.com"]
+    volumes:
+      - backend_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "80:3000"
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=http://tu-dominio.com:8000/api
+
+volumes:
+  backend_data:
