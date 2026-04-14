@@ -1,0 +1,191 @@
+.calendarContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  font-family: inherit;
+}
+
+.calendarHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.monthTitle {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #2d3748;
+  text-transform: capitalize;
+}
+
+.navButtons {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.navButton {
+  background: #f7fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: bold;
+}
+
+.navButton:hover {
+  background: #edf2f7;
+  border-color: #cbd5e0;
+}
+
+/* Grid Styles */
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background-color: #e2e8f0;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dayHeader {
+  background: #f8fafc;
+  padding: 0.75rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #718096;
+  text-transform: uppercase;
+}
+
+.dayCell {
+  background: white;
+  min-height: 100px;
+  padding: 0.5rem;
+  transition: background 0.2s;
+  cursor: pointer;
+  position: relative;
+}
+
+.dayCell:hover {
+  background: #fdfdfd;
+}
+
+.dayNumber {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #4a5568;
+  margin-bottom: 0.25rem;
+  display: block;
+}
+
+.notCurrentMonth {
+  background: #fcfcfc;
+  color: #cbd5e0;
+}
+
+.notCurrentMonth .dayNumber {
+  color: #cbd5e0;
+}
+
+.today {
+  background: #f0f7ff;
+}
+
+.today .dayNumber {
+  color: #3182ce;
+  font-weight: 800;
+  background: #ebf8ff;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.selected {
+  background: #fffaf0;
+  border: 2px solid #ed8936;
+  z-index: 1;
+}
+
+/* Event Indicators */
+.eventsListInCell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+}
+
+.eventMiniTag {
+  font-size: 0.7rem;
+  padding: 2px 4px;
+  border-radius: 3px;
+  background: #3182ce;
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.eventMiniTag.confirmed {
+  background: #38a169;
+}
+
+/* Detail View below calendar */
+.dayDetailView {
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.detailHeader {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #2d3748;
+}
+
+.detailEventsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.noEventsText {
+  color: #a0aec0;
+  font-style: italic;
+}
+
+/* Mobile Adjustments */
+@media (max-width: 768px) {
+  .dayCell {
+    min-height: 60px;
+    padding: 2px;
+  }
+  
+  .dayNumber {
+    font-size: 0.8rem;
+  }
+  
+  .eventMiniTag {
+    height: 6px;
+    width: 6px;
+    border-radius: 50%;
+    padding: 0;
+    font-size: 0;
+    margin: 1px auto;
+  }
+  
+  .eventsListInCell {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

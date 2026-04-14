@@ -1,51 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import styles from './EventsList.module.css';
-import { eventsService } from '../../services/eventsService';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import EventDetailModal from './EventDetailModal';
 
-export const EventsList = ({ onEdit }) => {
-  const [events, setEvents] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export const EventsList = ({ onEdit, onRefresh, events = [] }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
-
-  const load = async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await eventsService.getEvents();
-      data.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
-      setEvents(data);
-    } catch (err) {
-      setError(err.message || 'Error cargando eventos');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { load(); }, []);
 
   const handleEditClick = (event) => {
     setSelectedEvent(null);
     if (onEdit) onEdit(event);
   };
 
-  if (loading) return (
-    <div className={styles.loadingContainer}>
-      <div className={styles.spinner}></div>
-      <p>Cargando agenda...</p>
-    </div>
-  );
-
-  if (error) return (
-    <div className={styles.errorCard}>
-      <p>Error: {error}</p>
-      <button onClick={load} className="btn-secondary">Reintentar</button>
-    </div>
-  );
+  if (events.length === 0) {
+    return (
+      <div className={styles.emptyState}>
+        <p>No hay eventos programados</p>
+        <span className={styles.hint}>Añade uno nuevo arriba</span>
+      </div>
+    );
+  }
 
   const groups = events.reduce((acc, ev) => {
     const d = new Date(ev.fecha);
@@ -78,13 +53,6 @@ export const EventsList = ({ onEdit }) => {
           </button>
         </div>
       </div>
-
-      {groupKeys.length === 0 && (
-        <div className={styles.emptyState}>
-          <p>No hay eventos programados</p>
-          <span className={styles.hint}>Añade uno nuevo arriba</span>
-        </div>
-      )}
 
       {groupKeys.map(key => {
         const [year, month] = key.split('-');
@@ -198,7 +166,7 @@ export const EventsList = ({ onEdit }) => {
         <EventDetailModal 
           event={selectedEvent} 
           onClose={() => setSelectedEvent(null)} 
-          onUpdate={load}
+          onUpdate={onRefresh}
           onEdit={handleEditClick}
         />
       )}
