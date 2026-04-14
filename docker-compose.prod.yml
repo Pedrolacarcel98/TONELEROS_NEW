@@ -4,31 +4,44 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     command: python run_prod.py
-    ports:
-      - "8000:8000"
+    expose:
+      - "8000"
     environment:
       - DATABASE_URL=sqlite:////data/toneleros.db
-      - SECRET_KEY=tu-clave-secreta-cambiala-ya
+      - SECRET_KEY=tu-clave-secreta-muy-segura-123
       - DEBUG=False
-      - ALLOWED_ORIGINS=["http://tu-dominio.com", "https://tu-dominio.com"]
+      - ALLOWED_ORIGINS=["https://toneleros.in"]
     volumes:
       - backend_data:/data
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:8000/api/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    restart: always
 
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "80:3000"
+      dockerfile: Dockerfile.prod
+      args:
+        - VITE_API_URL=https://toneleros.in/api
+    expose:
+      - "3000"
     depends_on:
       - backend
-    environment:
-      - VITE_API_URL=http://tu-dominio.com:8000/api
+    restart: always
+
+  caddy:
+    image: caddy:2-alpine
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
 
 volumes:
   backend_data:
+  caddy_data:
+  caddy_config:

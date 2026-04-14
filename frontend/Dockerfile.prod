@@ -2,19 +2,20 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json ./
+# Argumento para la URL de la API en producción
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 
+COPY package.json ./
 RUN npm install
 
 COPY . .
-
 RUN npm run build
 
 # Stage 2: Production
 FROM node:18-alpine
 
 WORKDIR /app
-
 RUN npm install -g serve
 
 COPY --from=builder /app/dist ./dist
