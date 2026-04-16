@@ -8,8 +8,10 @@ import Finance from './pages/Finance';
 import Documents from './pages/Documents';
 import DocumentViewer from './pages/DocumentViewer';
 import Media from './pages/Media';
+import Clients from './pages/Clients';
 
 function App() {
+
   const { isAuthenticated } = useAuth();
   
   // 2. Creamos un estado para la ruta actual
@@ -42,6 +44,9 @@ function App() {
   }
   if (currentHash === '#/media') {
     return <Media />;
+  }
+  if (currentHash === '#/clients') {
+    return <Clients />;
   }
   if (currentHash.startsWith('#/documents/view/')) {
     return <DocumentViewer />;

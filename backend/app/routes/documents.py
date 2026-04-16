@@ -65,7 +65,12 @@ def download_document(doc_id: int, db: Session = Depends(get_db)):
     path = os.path.join(UPLOAD_DIR, doc.stored_name)
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail='File missing on server')
-    return FileResponse(path, media_type=doc.mime_type or 'application/octet-stream', filename=doc.original_name)
+    # Use content_disposition_type="inline" to allow browser viewing
+    return FileResponse(
+        path, 
+        media_type=doc.mime_type or 'application/octet-stream',
+        content_disposition_type="inline"
+    )
 
 
 @router.delete("/{doc_id}", status_code=status.HTTP_204_NO_CONTENT)

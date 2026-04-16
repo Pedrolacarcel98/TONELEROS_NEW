@@ -9,6 +9,7 @@ const Media = () => {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [selectedMedia, setSelectedMedia] = useState(null);
+  const [sharingId, setSharingId] = useState(null);
   const fileInputRef = useRef(null);
 
   const loadMedia = async () => {
@@ -54,18 +55,44 @@ const Media = () => {
     }
   };
 
-  const handleShare = (item) => {
+  const handleShare = async (item) => {
     const url = mediaService.getViewUrl(item.id);
-    if (navigator.share) {
-      navigator.share({
-        title: item.original_name,
-        text: 'Mira este contenido de Toneleros',
-        url: url,
-      }).catch(console.error);
-    } else {
-      // Fallback: Copy to clipboard
+    
+    // Si el navegador no soporta compartir, copiamos el link como fallback
+    if (!navigator.share || !navigator.canShare) {
       navigator.clipboard.writeText(url);
       alert('Enlace copiado al portapapeles');
+      return;
+    }
+
+    setSharingId(item.id);
+    try {
+      // 1. Descargamos el archivo para poder compartirlo físicamente
+      const response = await fetch(url);
+      const blob = await response.blob();
+      
+      // 2. Creamos el objeto File
+      const file = new File([blob], item.original_name, { type: blob.type });
+
+      // 3. Verificamos si el navegador permite compartir ese archivo concreto
+      if (navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: item.original_name,
+        });
+      } else {
+        // Fallback si no se puede compartir el archivo directamente
+        await navigator.share({
+          title: item.original_name,
+          url: url,
+        });
+      }
+    } catch (error) {
+      console.error('Error sharing:', error);
+      // Fallback final: copiar link
+      navigator.clipboard.writeText(url);
+    } finally {
+      setSharingId(null);
     }
   };
 
@@ -155,8 +182,17 @@ const Media = () => {
                       className={styles.actionBtn} 
                       onClick={() => handleShare(item)}
                       title="Compartir"
+                      disabled={sharingId === item.id}
                     >
-                      🔗
+                      {sharingId === item.id ? (
+                        <span className={styles.spinnerSmall}></span>
+                      ) : (
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                          <polyline points="16 6 12 2 8 6"></polyline>
+                          <line x1="12" y1="2" x2="12" y2="15"></line>
+                        </svg>
+                      )}
                     </button>
                     <button 
                       className={`${styles.actionBtn} ${styles.deleteBtn}`} 

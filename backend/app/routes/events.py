@@ -59,7 +59,7 @@ def create_event(payload: EventCreate, db: Session = Depends(get_db)):
             senal=payload.senal,
             observaciones=payload.observaciones,
             equipo=payload.equipo,
-            estado=payload.estado,
+            estado=payload.estado
         )
         db.add(ev)
         db.commit()

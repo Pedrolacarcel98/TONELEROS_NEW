@@ -26,27 +26,31 @@
 }
 
 .backBtn {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
   color: var(--text-primary);
-  padding: 8px 0;
+  padding: 8px 16px;
   font-size: 0.95rem;
-  border-radius: 0;
-  transition: opacity 0.2s;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .backBtn:hover {
-  opacity: 0.7;
-  transform: none;
-  box-shadow: none;
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--accent);
+  transform: translateX(-3px);
 }
 
 .arrow {
   font-size: 1.2rem;
-  margin-right: 8px;
+  line-height: 1;
 }
 
 .backText {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 /* Logo Styling */
@@ -77,7 +81,8 @@
 }
 
 .centerLogo .logoText {
-  font-size: 1rem;
+  font-size: 1.1rem;
+  opacity: 0.8;
 }
 
 /* Right Section */
@@ -103,24 +108,30 @@
 
 .logoutBtn {
   background: var(--accent);
-  color: #000;
+  color: var(--bg-color);
   padding: 6px 16px;
   font-size: 0.85rem;
-  border-radius: 6px;
+  border-radius: 8px;
+  font-weight: 700;
 }
 
 .logoutBtn:hover {
-  background: #e2e8f0;
+  filter: brightness(0.9);
 }
 
 /* Responsive Tweaks */
 @media (max-width: 768px) {
   .header {
-    height: 60px;
+    height: 65px;
   }
   
+  .backBtn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+  }
+
   .backText {
-    display: none;
+    display: inline; /* Mantenemos el texto en móvil para mayor claridad */
   }
   
   .centerLogo {
@@ -139,5 +150,13 @@
   
   .logoIcon {
     font-size: 1.2rem;
+  }
+
+  .backBtn {
+    padding: 5px 10px;
+  }
+  
+  .backText {
+    font-size: 0.8rem;
   }
 }

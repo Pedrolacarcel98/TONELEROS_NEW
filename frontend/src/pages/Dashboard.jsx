@@ -40,21 +40,13 @@ export const Dashboard = () => {
             <p>Galería de fotos y videos</p>
             <button onClick={() => { window.location.hash = '#/media'; }} className={styles.btn}>Ir a Multimedia</button>
           </div>
-        </div>
 
-        <div className={styles.infoBox}>
-          <h2>ℹ️ Estado del MVP</h2>
-          <p>
-            Esta es la versión inicial de la plataforma. Actualmente tienes acceso a:
-          </p>
-          <ul>
-            <li>✓ Autenticación de usuarios</li>
-            <li>✓ Dashboard principal</li>
-            <li>⏳ Gestión de eventos (Funcional pero en desarrollo)</li>
-            <li>⏳ Control de finanzas (Funcional pero en desarrollo)</li>
-            <li>⏳ Gestión de documentos (próximamente)</li>
-            <li>⏳ Galería multimedia (próximamente)</li>
-          </ul>
+          <div className={styles.card}>
+            <div className={styles.icon}>👥</div>
+            <h3>Clientes</h3>
+            <p>Gestión de clientes habituales</p>
+            <button onClick={() => { window.location.hash = '#/clients'; }} className={styles.btn}>Ir a Clientes</button>
+          </div>
         </div>
 
         {/* Events moved to dedicated page */}

@@ -14,6 +14,7 @@
 .title {
   font-size: 2.5rem;
   font-weight: 800;
+  color: var(--text-primary);
 }
 
 .controls {
@@ -43,12 +44,21 @@
 
 .activeTab {
   background: var(--accent);
-  color: #000;
+  color: var(--bg-color);
 }
 
 .uploadBtn {
   background: var(--accent);
-  color: #000;
+  color: var(--bg-color);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  border: none;
+}
+
+.uploadBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
 .grid {
@@ -63,11 +73,14 @@
   overflow: hidden;
   border: 1px solid var(--border);
   transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
 }
 
 .itemCard:hover {
   transform: translateY(-5px);
   border-color: var(--accent);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .preview {
@@ -77,32 +90,70 @@
   cursor: pointer;
 }
 
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.overlay span {
+  color: white;
+  font-weight: 600;
+  font-size: 0.8rem;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.itemCard:hover .overlay {
+  opacity: 1;
+}
+
 .preview img, .preview video {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: grayscale(0.5);
-  transition: filter 0.3s;
+  transition: transform 0.3s;
 }
 
 .itemCard:hover .preview img, 
 .itemCard:hover .preview video {
-  filter: grayscale(0);
+  transform: scale(1.05);
 }
 
 .itemInfo {
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
 }
 
 .fileName {
   font-weight: 600;
   margin-bottom: 12px;
   font-size: 0.9rem;
+  color: var(--text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-all;
 }
 
 .actions {
   display: flex;
-  gap: 10px;
+  gap: 8px;
 }
 
 .actionBtn {
@@ -112,22 +163,115 @@
   padding: 8px;
   color: var(--text-primary);
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: 1.1rem;
 }
 
 .actionBtn:hover {
   background: var(--accent);
-  color: #000;
+  color: var(--bg-color);
+  border-color: var(--accent);
 }
 
 .deleteBtn:hover {
   background: var(--danger) !important;
   color: white !important;
-  border-color: var(--danger);
+  border-color: var(--danger) !important;
 }
 
+.spinnerSmall {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Modal Viewer Styles */
 .modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   background: rgba(0, 0, 0, 0.95);
   backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modalContent {
+  position: relative;
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modalContent img, .modalContent video {
+  max-width: 100%;
+  max-height: 80vh;
+  object-fit: contain;
+  border-radius: 8px;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.closeBtn {
+  position: absolute;
+  top: -40px;
+  right: -10px;
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 2.5rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 10px;
+}
+
+.modalFooter {
+  margin-top: 15px;
+  text-align: center;
+  width: 100%;
+}
+
+.modalFooter h3 {
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 80px;
+  background: var(--card-bg);
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .header { margin: 20px 0; }
+  .title { font-size: 1.8rem; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); }
 }
 
 @media (max-width: 640px) {

@@ -9,6 +9,8 @@ from app.routes import events
 from app.routes import finance
 from app.routes import documents
 from app.routes import media
+from app.routes import clients
+from app.models.client import Client # Ensure model is loaded for init_db()
 
 # Initialize database
 init_db()
@@ -35,6 +37,7 @@ app.include_router(events.router)
 app.include_router(finance.router)
 app.include_router(documents.router)
 app.include_router(media.router)
+app.include_router(clients.router)
 
 # mount uploads directory to serve files
 UPLOAD_DIR = os.path.join(os.path.dirname(__file__), '..', 'uploads')

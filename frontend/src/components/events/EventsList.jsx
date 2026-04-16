@@ -59,7 +59,9 @@ export const EventsList = ({ onEdit, onRefresh, events = [] }) => {
         const items = groups[key];
         const monthDate = new Date(parseInt(year, 10), parseInt(month, 10) - 1, 1);
         const headerLabel = format(monthDate, 'LLLL yyyy', { locale: es });
-        const totalGross = items.reduce((s, it) => s + (Number(it.presupuesto) || 0), 0);
+        const totalGross = items
+          .filter(it => it.estado !== 'NEGOCIACION')
+          .reduce((s, it) => s + (Number(it.presupuesto) || 0), 0);
 
         return (
           <section key={key} className={styles.monthSection}>

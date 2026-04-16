@@ -1,221 +1,215 @@
-/* Contenedor principal */
 .documentsContainer {
-  min-height: 100vh;
-  background-color: #f4f7f9;
-  padding-bottom: 40px;
+  padding-bottom: 60px;
 }
 
 .pageHeader {
+  margin: 40px 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 30px;
   flex-wrap: wrap;
   gap: 20px;
 }
 
 .pageHeader h1 {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
   margin: 0;
-  font-size: 2rem;
-  color: #2d3748;
 }
 
-/* Formulario de subida */
 .uploadForm {
   display: flex;
   gap: 12px;
   align-items: center;
-  background: white;
-  padding: 10px 15px;
-  border-radius: 10px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-}
-
-.fileInputWrapper {
-  flex: 1;
 }
 
 .fileInput {
-  width: 100%;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--border);
+  border-radius: 10px;
   padding: 8px 12px;
-  border: 1px dashed #cbd5e0;
-  border-radius: 6px;
-  cursor: pointer;
-  background: #f7fafc;
-  transition: all 0.2s;
-}
-
-.fileInput:hover {
-  background: #edf2f7;
-  border-color: #a0aec0;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  width: 250px;
 }
 
 .uploadBtn {
-  background: #4a5568;
-  color: white;
+  background: var(--accent);
+  color: var(--bg-color);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
   border: none;
-  padding: 10px 24px;
-  border-radius: 6px;
   cursor: pointer;
-  font-weight: 600;
-  transition: all 0.2s;
-  height: 40px;
 }
 
-.uploadBtn:hover:not(:disabled) {
-  background: #2d3748;
-}
-
-.uploadBtn:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* Cuadrícula de documentos */
+/* Grid layout */
 .previewGrid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 24px;
 }
 
-/* Tarjeta de documento */
 .previewCard {
-  background: white;
-  border-radius: 12px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   display: flex;
   flex-direction: column;
+  transition: all 0.3s ease;
 }
 
 .previewCard:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+  border-color: var(--accent);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Miniatura */
 .thumb {
-  height: 160px;
-  background: #edf2f7;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
-  cursor: pointer;
+  height: 200px;
+  background: rgba(0, 0, 0, 0.2);
   position: relative;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border);
+  overflow: hidden;
 }
 
-.thumb img {
+.previewImg {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-.thumb iframe {
+/* PDF Real Preview */
+.pdfPreviewWrapper {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background: #f1f5f9;
+}
+
+.pdfIframe {
   width: 100%;
   height: 100%;
   border: none;
-  pointer-events: none; /* Evita que el iframe capture clicks */
+  pointer-events: none; /* Crucial: clicks go through to the card */
+  transform: scale(1);
+  transform-origin: 0 0;
 }
 
-.fileIcon {
-  font-size: 64px;
+.previewOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 5;
+}
+
+/* Placeholder styles for Word/Excel */
+.docPreviewPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.fileIconLarge {
+  font-size: 3.5rem;
+  margin-bottom: 10px;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
 }
 
-/* Información y acciones */
+.dummyLines {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.line {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+}
+
+/* Tags */
+.pdfTag { background: #ef4444; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 800; position: absolute; top: 10px; right: 10px; z-index: 10; }
+.wordTag { background: #3b82f6; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 800; position: absolute; top: 10px; right: 10px; z-index: 10; }
+.excelTag { background: #10b981; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 800; position: absolute; top: 10px; right: 10px; z-index: 10; }
+.fileTag { background: #64748b; color: white; padding: 4px 10px; border-radius: 4px; font-size: 0.75rem; font-weight: 800; position: absolute; top: 10px; right: 10px; z-index: 10; }
+
 .meta {
-  padding: 15px;
+  padding: 16px;
   flex-grow: 1;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
 }
 
 .name {
   font-weight: 600;
-  color: #2d3748;
-  margin-bottom: 12px;
-  white-space: nowrap;
+  font-size: 0.95rem;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
   text-overflow: ellipsis;
-  font-size: 0.95rem;
 }
 
 .actions {
   display: flex;
   gap: 8px;
-  margin-top: auto;
 }
 
 .actionBtn {
   flex: 1;
-  padding: 6px 4px;
-  border-radius: 6px;
+  padding: 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--text-primary);
   font-size: 0.8rem;
   font-weight: 600;
-  text-align: center;
-  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
   cursor: pointer;
-  transition: all 0.2s;
-  border: 1px solid #e2e8f0;
-  background: white;
-  color: #4a5568;
 }
 
 .actionBtn:hover {
-  background: #f7fafc;
-  border-color: #cbd5e0;
-}
-
-.shareBtn {
-  background: #ebf8ff;
-  color: #3182ce;
-  border-color: #bee3f8;
-}
-
-.shareBtn:hover {
-  background: #bee3f8;
-}
-
-.deleteBtn {
-  color: #e53e3e;
+  background: var(--accent);
+  color: var(--bg-color);
 }
 
 .deleteBtn:hover {
-  background: #fff5f5;
-  border-color: #feb2b2;
+  background: var(--danger) !important;
+  color: white !important;
 }
 
-.openBtn {
-  background: #f0fff4;
-  color: #38a169;
-  border-color: #c6f6d5;
+.spinnerSmall {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
 }
 
-.openBtn:hover {
-  background: #c6f6d5;
-}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-/* Responsive */
-@media (max-width: 640px) {
-  .pageHeader {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .uploadForm {
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-  }
-  
-  .previewGrid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 16px;
-  }
-  
-  .thumb {
-    height: 120px;
-  }
+@media (max-width: 768px) {
+  .pageHeader { flex-direction: column; align-items: stretch; margin: 20px 0; }
+  .uploadForm { flex-direction: column; align-items: stretch; }
+  .fileInput { width: 100%; }
 }

@@ -22,6 +22,20 @@ export const EventForm = ({ onCreated, initialData, onCancel }) => {
   const isEditing = !!initialData;
 
   useEffect(() => {
+    // Check for pre-fill data (from Clients section)
+    const prefill = sessionStorage.getItem('prefill_event');
+    if (prefill && !isEditing) {
+      const data = JSON.parse(prefill);
+      setForm((prev) => ({
+        ...prev,
+        pContacto: data.pContacto || '',
+        tlf: data.tlf || '',
+        direccion: data.direccion || ''
+      }));
+      setVisible(true);
+      sessionStorage.removeItem('prefill_event'); // Clean up
+    }
+
     if (initialData) {
       setForm({
         ...initialData,

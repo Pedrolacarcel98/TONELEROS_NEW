@@ -1,0 +1,133 @@
+.page {
+  padding-bottom: 60px;
+}
+
+.header {
+  margin: 40px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.addBtn {
+  background: var(--accent);
+  color: var(--bg-color);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+.formSection {
+  margin-bottom: 40px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.tableWrapper {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 16px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.table td {
+  padding: 16px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.clientName {
+  display: flex;
+  flex-direction: column;
+}
+
+.clientName strong {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+}
+
+.clientName small {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+.clientContact {
+  font-size: 0.9rem;
+}
+
+.clientContact small {
+  display: block;
+  color: var(--text-secondary);
+}
+
+.clientAddress {
+  font-size: 0.9rem;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.eventBtn {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--success);
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+}
+
+.editBtn, .deleteBtn {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.deleteBtn:hover {
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 40px;
+  color: var(--text-secondary);
+  background: var(--card-bg);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
