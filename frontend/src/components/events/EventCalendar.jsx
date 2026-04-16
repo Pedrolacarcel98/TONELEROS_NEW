@@ -154,30 +154,25 @@ const EventCalendar = ({ events, onEventClick }) => {
         </h3>
         {selectedDayEvents.length > 0 ? (
           <div className={styles.detailEventsList}>
-            {selectedDayEvents.map(event => (
-              <div 
-                key={event.id} 
-                className={styles.eventMiniTag} 
-                style={{
-                  padding: '1rem', 
-                  fontSize: '0.95rem', 
-                  display: 'flex', 
-                  justifyContent: 'space-between',
-                  cursor: 'pointer',
-                  backgroundColor: event.estado === 'CONFIRMADO' ? '#e6fffa' : '#ebf8ff',
-                  color: event.estado === 'CONFIRMADO' ? '#234e52' : '#2c5282',
-                  borderLeft: `4px solid ${event.estado === 'CONFIRMADO' ? '#38a169' : '#3182ce'}`
-                }}
-                onClick={() => onEventClick(event)}
-              >
-                <div>
-                  <strong>{formatTime(event.fecha)}</strong> - {event.tipo}
+            {selectedDayEvents.map(event => {
+              const isConfirmed = event.estado === 'CONFIRMADO';
+              return (
+                <div 
+                  key={event.id} 
+                  className={`${styles.detailEventItem} ${isConfirmed ? styles.detailConfirmed : styles.detailNegotiation}`}
+                  onClick={() => onEventClick(event)}
+                >
+                  <div className={styles.detailEventInfo}>
+                    <span className={styles.detailTime}>{formatTime(event.fecha)}</span>
+                    <span className={styles.detailDivider}>|</span>
+                    <span className={styles.detailType}>{event.tipo}</span>
+                  </div>
+                  <div className={styles.detailArrow}>
+                     ➜
+                  </div>
                 </div>
-                <div>
-                   ➜
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <p className={styles.noEventsText}>No hay eventos programados para este día.</p>

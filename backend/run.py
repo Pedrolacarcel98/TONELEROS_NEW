@@ -6,7 +6,7 @@ Entrypoint for backend container
 """
 import sys
 import subprocess
-from init_db import create_test_users
+from init_db import init_db
 
 if __name__ == "__main__":
     print("=" * 60)
@@ -16,7 +16,7 @@ if __name__ == "__main__":
     # Initialize database
     print("\n📦 Initializing database...")
     try:
-        create_test_users()
+        init_db()
     except Exception as e:
         print(f"⚠️ Database initialization warning: {e}")
         print("Continuing anyway...\n")

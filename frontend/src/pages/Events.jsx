@@ -9,6 +9,7 @@ import styles from './Events.module.css';
 
 export const Events = () => {
   const [view, setView] = useState('list'); // 'list' o 'calendar'
+  const [showHistory, setShowHistory] = useState(false);
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -17,12 +18,12 @@ export const Events = () => {
 
   useEffect(() => {
     fetchEvents();
-  }, [refreshKey]);
+  }, [refreshKey, showHistory]);
 
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const data = await eventsService.getEvents();
+      const data = await eventsService.getEvents(showHistory);
       setEvents(data);
     } catch (error) {
       console.error('Error fetching events:', error);
@@ -59,29 +60,50 @@ export const Events = () => {
       <main className="container">
         <header className={styles.header}>
           <h1 className={styles.title}>Agenda de Eventos</h1>
-          <div className={styles.viewSwitcher}>
-            <button 
-              className={`${styles.viewBtn} ${view === 'list' ? styles.activeView : ''}`}
-              onClick={() => setView('list')}
-            >
-              Lista
-            </button>
-            <button 
-              className={`${styles.viewBtn} ${view === 'calendar' ? styles.activeView : ''}`}
-              onClick={() => setView('calendar')}
-            >
-              Calendario
-            </button>
+          
+          <div className={styles.headerActions}>
+            <div className={styles.filterTabs}>
+              <button 
+                className={`${styles.tabBtn} ${!showHistory ? styles.activeTab : ''}`}
+                onClick={() => setShowHistory(false)}
+              >
+                Próximos
+              </button>
+              <button 
+                className={`${styles.tabBtn} ${showHistory ? styles.activeTab : ''}`}
+                onClick={() => setShowHistory(true)}
+              >
+                Historial
+              </button>
+            </div>
+
+            <div className={styles.viewSwitcher}>
+              <button 
+                className={`${styles.viewBtn} ${view === 'list' ? styles.activeView : ''}`}
+                onClick={() => setView('list')}
+              >
+                Lista
+              </button>
+              <button 
+                className={`${styles.viewBtn} ${view === 'calendar' ? styles.activeView : ''}`}
+                onClick={() => setView('calendar')}
+              >
+                Calendario
+              </button>
+            </div>
           </div>
         </header>
 
-        <section className={styles.formSection}>
-          <EventForm 
-            onCreated={handleCreated} 
-            initialData={editingEvent}
-            onCancel={handleCancelEdit}
-          />
-        </section>
+        {/* Solo mostramos el formulario si no estamos viendo el historial */}
+        {!showHistory && (
+          <section className={styles.formSection}>
+            <EventForm 
+              onCreated={handleCreated} 
+              initialData={editingEvent}
+              onCancel={handleCancelEdit}
+            />
+          </section>
+        )}
 
         {loading ? (
           <div style={{textAlign: 'center', padding: '2rem'}}>Cargando eventos...</div>

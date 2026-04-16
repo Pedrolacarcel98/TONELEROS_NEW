@@ -10,9 +10,38 @@ router = APIRouter(prefix="/api/events", tags=["events"])
 
 
 @router.get("/", response_model=List[EventResponse])
-def list_events(db: Session = Depends(get_db)):
-    """Return all events ordered by fecha ascending"""
-    events = db.query(Event).filter(Event.archivado == False).order_by(Event.fecha.asc()).all()
+def list_events(history: bool = False, db: Session = Depends(get_db)):
+    """
+    Return events.
+    - If history=False (default): Returns upcoming events (fecha >= today) and not archived.
+    - If history=True: Returns past events (fecha < today) or already archived ones.
+    """
+    now = datetime.now()
+    
+    # Auto-archive past events that aren't archived yet
+    # We do this on the fly when listing
+    past_events = db.query(Event).filter(
+        Event.fecha < now,
+        Event.archivado == False
+    ).all()
+    
+    if past_events:
+        for event in past_events:
+            event.archivado = True
+        db.commit()
+
+    if history:
+        # Show history: past dates or explicitly archived
+        events = db.query(Event).filter(
+            (Event.fecha < now) | (Event.archivado == True)
+        ).order_by(Event.fecha.desc()).all()
+    else:
+        # Show upcoming: future dates and not explicitly archived
+        events = db.query(Event).filter(
+            Event.fecha >= now,
+            Event.archivado == False
+        ).order_by(Event.fecha.asc()).all()
+        
     return events
 
 

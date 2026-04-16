@@ -73,10 +73,11 @@ export const EventsList = ({ onEdit, onRefresh, events = [] }) => {
                 {items.map(ev => {
                   const eventDate = new Date(ev.fecha);
                   const isNegotiation = ev.estado === 'NEGOCIACION';
+                  const isArchived = ev.archivado;
                   return (
                     <div 
                       key={ev.id} 
-                      className={`${styles.eventCard} ${isNegotiation ? styles.negotiationCard : ''}`} 
+                      className={`${styles.eventCard} ${isNegotiation ? styles.negotiationCard : ''} ${isArchived ? styles.archivedCard : ''}`} 
                       onClick={() => setSelectedEvent(ev)}
                     >
                       <div className={styles.dateBlock}>
@@ -87,7 +88,7 @@ export const EventsList = ({ onEdit, onRefresh, events = [] }) => {
                       <div className={styles.cardInfo}>
                         <div className={styles.cardHeader}>
                           <span className={`${styles.typeBadge} ${isNegotiation ? styles.negotiationBadge : ''}`}>
-                            {isNegotiation ? '⌛ Negociación' : ev.tipo}
+                            {isArchived ? '📁 Archivado' : (isNegotiation ? '⌛ Negociación' : ev.tipo)}
                           </span>
                           <span className={styles.time}>{format(eventDate, 'HH:mm')}</span>
                         </div>

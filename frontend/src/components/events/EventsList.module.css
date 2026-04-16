@@ -93,6 +93,12 @@
   background: linear-gradient(to right, rgba(250, 204, 21, 0.05), transparent);
 }
 
+.archivedCard {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+  border-style: dashed;
+}
+
 .eventCard:hover {
   transform: translateY(-5px);
   border-color: var(--accent);

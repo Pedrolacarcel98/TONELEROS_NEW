@@ -1,8 +1,8 @@
 import apiClient from './apiClient';
 
 export const eventsService = {
-  getEvents: async () => {
-    const res = await apiClient.get('/events/');
+  getEvents: async (history = false) => {
+    const res = await apiClient.get('/events/', { params: { history } });
     return res.data;
   },
 
