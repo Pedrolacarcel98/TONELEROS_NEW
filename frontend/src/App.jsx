@@ -9,6 +9,7 @@ import Documents from './pages/Documents';
 import DocumentViewer from './pages/DocumentViewer';
 import Media from './pages/Media';
 import Clients from './pages/Clients';
+import Integrations from './pages/Integrations';
 
 function App() {
 
@@ -50,6 +51,9 @@ function App() {
   }
   if (currentHash.startsWith('#/documents/view/')) {
     return <DocumentViewer />;
+  }
+  if (currentHash === '#/integrations') {
+    return <Integrations />;
   }
   
   return <Dashboard />;

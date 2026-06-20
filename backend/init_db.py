@@ -16,11 +16,10 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from sqlalchemy.orm import Session
 from app.db.database import SessionLocal, engine
 from app.db.base import Base
-from app.models.user import User
-from app.models.event import Event
+from app.models import * # Import all models so Base registers them
 
 def init_db():
-    print("🚀 Iniciando migración de datos histórica...")
+    print("Iniciando migracion de datos historica...")
     Base.metadata.create_all(bind=engine)
     
     db = SessionLocal()
@@ -31,10 +30,10 @@ def init_db():
         import_legacy_data(db)
         
         db.commit()
-        print("✅ PROCESO COMPLETADO EXITOSAMENTE.")
+        print("PROCESO COMPLETADO EXITOSAMENTE.")
     except Exception as e:
         db.rollback()
-        print(f"❌ ERROR: {e}")
+        print(f"ERROR: {e}")
     finally:
         db.close()
 
@@ -49,9 +48,7 @@ def create_users(db: Session):
             # Ajustar nombres de campos según tu modelo User
             new_user = User(
                 email=u["email"],
-                hashed_password=get_password_hash(u["password"]),
-                full_name=u["full_name"],
-                is_admin=u["admin"]
+                password=get_password_hash(u["password"])
             )
             db.add(new_user)
             print(f"👤 Usuario creado: {u['email']}")

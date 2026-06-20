@@ -47,6 +47,13 @@ export const Dashboard = () => {
             <p>Gestión de clientes habituales</p>
             <button onClick={() => { window.location.hash = '#/clients'; }} className={styles.btn}>Ir a Clientes</button>
           </div>
+
+          <div className={styles.card}>
+            <div className={styles.icon}>⚡</div>
+            <h3>Integraciones (n8n)</h3>
+            <p>Configura webhooks y automatizaciones</p>
+            <button onClick={() => { window.location.hash = '#/integrations'; }} className={styles.btn}>Ir a Integraciones</button>
+          </div>
         </div>
 
         {/* Events moved to dedicated page */}
