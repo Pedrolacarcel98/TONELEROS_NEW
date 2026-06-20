@@ -14,7 +14,7 @@ import os
 
 N8N_WEBHOOK_URL = os.getenv("N8N_WEBHOOK_URL")
 N8N_WEBHOOK_URL_LOCAL = "http://localhost:5678/webhook/new_event"
-N8N_WEBHOOK_URL_DOCKER = "http://host.docker.internal:5678/webhook/new_event"
+N8N_WEBHOOK_URL_DOCKER = "http://n8n:5678/webhook/new_event"
 
 async def enviar_a_n8n(datos: dict):
     async with httpx.AsyncClient() as client:

@@ -13,3 +13,7 @@ toneleros.in {
 
     encode zstd gzip
 }
+
+n8n.toneleros.in {
+    reverse_proxy n8n:5678
+}
