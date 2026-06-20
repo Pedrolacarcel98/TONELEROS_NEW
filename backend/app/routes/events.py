@@ -131,7 +131,9 @@ def create_event(payload: EventCreate, background_tasks: BackgroundTasks, db: Se
             "event_id": ev.id,
             "equipo": payload.equipo,
             "gcal_url": gcal_url,
-            "ics_url": ics_url
+            "ics_url": ics_url,
+            "presupuesto": payload.presupuesto,
+            "tipo": payload.tipo
         }
         
         # Enviar a n8n en segundo plano SOLAMENTE si el estado es CONFIRMADO
@@ -209,7 +211,9 @@ def update_event(event_id: int, payload: EventCreate, background_tasks: Backgrou
                 "event_id": ev.id,
                 "equipo": payload.equipo,
                 "gcal_url": gcal_url,
-                "ics_url": ics_url
+                "ics_url": ics_url,
+                "presupuesto": payload.presupuesto,
+                "tipo": payload.tipo
             }
             background_tasks.add_task(enviar_a_n8n, datos_para_n8n)
             
