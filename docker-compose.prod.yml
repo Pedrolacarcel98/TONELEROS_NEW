@@ -48,7 +48,6 @@ services:
     environment:
       - N8N_HOST=n8n.toneleros.in
       - N8N_PORT=5678
-      - N8N_PROTOCOL=https
       - WEBHOOK_URL=https://n8n.toneleros.in/
     volumes:
       - n8n_data:/home/node/.n8n
