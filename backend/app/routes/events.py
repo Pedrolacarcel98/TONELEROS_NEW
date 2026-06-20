@@ -10,18 +10,24 @@ from datetime import datetime
 router = APIRouter(prefix="/api/events", tags=["events"])
 
 # URL de webhook de n8n
-N8N_WEBHOOK_URL_LOCAL = "http://localhost:5678/webhook-test/new_event"
-N8N_WEBHOOK_URL_DOCKER = "http://host.docker.internal:5678/webhook-test/new_event"
+import os
+
+N8N_WEBHOOK_URL = os.getenv("N8N_WEBHOOK_URL")
+N8N_WEBHOOK_URL_LOCAL = "http://localhost:5678/webhook/new_event"
+N8N_WEBHOOK_URL_DOCKER = "http://host.docker.internal:5678/webhook/new_event"
 
 async def enviar_a_n8n(datos: dict):
     async with httpx.AsyncClient() as client:
         try:
-            # Primero intentamos con localhost (si ejecutas Python manual sin Docker)
-            try:
-                await client.post(N8N_WEBHOOK_URL_LOCAL, json=datos, timeout=5.0)
-            except httpx.ConnectError:
-                # Si falla la conexión, intentamos con host.docker.internal (si ejecutas con Docker)
-                await client.post(N8N_WEBHOOK_URL_DOCKER, json=datos, timeout=5.0)
+            if N8N_WEBHOOK_URL:
+                await client.post(N8N_WEBHOOK_URL, json=datos, timeout=5.0)
+            else:
+                # Primero intentamos con localhost (si ejecutas Python manual sin Docker)
+                try:
+                    await client.post(N8N_WEBHOOK_URL_LOCAL, json=datos, timeout=5.0)
+                except httpx.ConnectError:
+                    # Si falla la conexión, intentamos con host.docker.internal (si ejecutas con Docker)
+                    await client.post(N8N_WEBHOOK_URL_DOCKER, json=datos, timeout=5.0)
             print("Webhook enviado a n8n correctamente.")
         except Exception as e:
             print(f"Error al enviar a n8n: {e}")
