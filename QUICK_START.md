@@ -27,6 +27,48 @@ Espera 30-60 segundos mientras instala dependencias...
 
 ---
 
+## 🔄 Migración de Datos (Separación Fecha/Hora)
+
+**¡MUY IMPORTANTE PARA NO PERDER DATOS!** 
+Se ha separado la fecha de la hora en la base de datos y se ha añadido el cálculo automático de la hora de llegada. Para que esto funcione sin perder ningún evento existente, debes ejecutar el script de migración una vez que despliegues los cambios.
+
+### En Desarrollo (Local con Docker)
+
+1. Levanta los contenedores con los últimos cambios:
+   ```bash
+   docker-compose up -d --build
+   ```
+2. Ejecuta el script de migración dentro del contenedor del backend:
+   ```bash
+   docker-compose exec backend python migrate_times.py
+   ```
+3. Verás un mensaje indicando que se han añadido las columnas y que la migración se completó con éxito.
+
+### En Producción (Máquina Virtual de Google Cloud)
+
+Dado que usas Docker en una VM de Google Cloud, los pasos son los siguientes:
+
+1. Conéctate por SSH a tu instancia de Google Cloud.
+2. Navega a la carpeta donde tienes alojado el proyecto:
+   ```bash
+   cd /ruta/a/tu/proyecto/TONELEROS_APP
+   ```
+3. Descarga los últimos cambios del repositorio (si usas git):
+   ```bash
+   git pull
+   ```
+4. Reconstruye y levanta los contenedores con los nuevos cambios en segundo plano:
+   ```bash
+   docker-compose -f docker-compose.prod.yml up -d --build
+   ```
+5. Ejecuta la migración de datos dentro del contenedor del backend activo (esto no detendrá la aplicación):
+   ```bash
+   docker-compose -f docker-compose.prod.yml exec backend python migrate_times.py
+   ```
+6. Verás un mensaje de éxito. ¡Tus datos se habrán migrado al nuevo formato de fecha y hora!
+
+---
+
 ## 🛠️ Comandos Útiles
 
 ```bash

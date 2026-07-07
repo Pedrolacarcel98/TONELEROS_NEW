@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './EventDetailModal.module.css';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -12,6 +12,24 @@ export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
 
   const handleEdit = () => {
     onEdit(event);
+  };
+
+  const handleToggleRepartida = async (isRepartida) => {
+    const msg = isRepartida 
+      ? '¿Marcar la señal como repartida entre los integrantes?' 
+      : '¿Seguro que quieres desmarcar la señal como repartida?';
+    if (!window.confirm(msg)) return;
+    try {
+      const updatedData = { ...event, senal_repartida: isRepartida };
+      delete updatedData.id;
+      delete updatedData.archivado;
+      delete updatedData.created_at;
+      
+      await eventsService.updateEvent(event.id, updatedData);
+      if (onUpdate) onUpdate();
+    } catch (error) {
+      alert('Error al actualizar la señal');
+    }
   };
 
   const handleConfirm = async () => {
@@ -104,8 +122,39 @@ export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Señal / Reserva:</span>
-                <span className={styles.value}>{Number(event.senal).toLocaleString()} €</span>
+                <span className={styles.value}>
+                  {Number(event.senal).toLocaleString()} €
+                </span>
               </div>
+              
+              {Number(event.senal) > 0 && (
+                <div className={styles.infoRow}>
+                  <span className={styles.label}>Estado de Señal:</span>
+                  <span className={styles.value}>
+                    {event.senal_repartida ? (
+                      <span style={{ color: 'green', fontWeight: 'bold' }}>
+                        ✓ Señal repartida por {event.cobrador}
+                        <button 
+                          onClick={() => handleToggleRepartida(false)}
+                          style={{ marginLeft: '10px', fontSize: '0.8rem', padding: '2px 5px', cursor: 'pointer', background: '#ffebee', color: '#c62828', border: 'none', borderRadius: '4px' }}
+                        >
+                          Desmarcar
+                        </button>
+                      </span>
+                    ) : (
+                      <span>
+                        Cobrada por: {event.cobrador}
+                        <button 
+                          onClick={() => handleToggleRepartida(true)}
+                          style={{ marginLeft: '10px', fontSize: '0.8rem', padding: '2px 5px', cursor: 'pointer', background: '#e8f5e9', color: '#2e7d32', border: 'none', borderRadius: '4px' }}
+                        >
+                          Marcar como repartida
+                        </button>
+                      </span>
+                    )}
+                  </span>
+                </div>
+              )}
               <div className={styles.infoRow}>
                 <span className={styles.label}>Pendiente:</span>
                 <span className={styles.value}>{(Number(event.presupuesto) - Number(event.senal)).toLocaleString()} €</span>

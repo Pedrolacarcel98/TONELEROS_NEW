@@ -3,10 +3,12 @@ import styles from './EventsList.module.css';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import EventDetailModal from './EventDetailModal';
+import { checkVacationOverlap } from '../../utils/vacationUtils';
 
-export const EventsList = ({ onEdit, onRefresh, events = [] }) => {
+export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [] }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
+  const [openTooltipId, setOpenTooltipId] = useState(null);
 
   const handleEditClick = (event) => {
     setSelectedEvent(null);
@@ -76,12 +78,25 @@ export const EventsList = ({ onEdit, onRefresh, events = [] }) => {
                   const eventDate = new Date(ev.fecha);
                   const isNegotiation = ev.estado === 'NEGOCIACION';
                   const isArchived = ev.archivado;
+                  const overlaps = checkVacationOverlap(ev.fecha, vacations);
+
                   return (
                     <div 
                       key={ev.id} 
                       className={`${styles.eventCard} ${isNegotiation ? styles.negotiationCard : ''} ${isArchived ? styles.archivedCard : ''}`} 
                       onClick={() => setSelectedEvent(ev)}
                     >
+                      {overlaps.length > 0 && (
+                        <div className={styles.warningContainerCard} onClick={(e) => { e.stopPropagation(); setOpenTooltipId(openTooltipId === ev.id ? null : ev.id); }}>
+                          <span className={styles.warningIcon}>⚠️</span>
+                          {openTooltipId === ev.id && (
+                            <div className={styles.warningDropdown}>
+                              A este concierto no podrá venir a tocar {overlaps.join(', ')} (Día pedido)
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                       <div className={styles.dateBlock}>
                         <span className={styles.dayNum}>{format(eventDate, 'd')}</span>
                         <span className={styles.dayName}>{format(eventDate, 'eee', { locale: es })}</span>
@@ -129,11 +144,27 @@ export const EventsList = ({ onEdit, onRefresh, events = [] }) => {
                       const eventDate = new Date(ev.fecha);
                       const pending = Number(ev.presupuesto) - Number(ev.senal);
                       const isNegotiation = ev.estado === 'NEGOCIACION';
+                      const overlaps = checkVacationOverlap(ev.fecha, vacations);
+
                       return (
                         <tr key={ev.id} onClick={() => setSelectedEvent(ev)} className={`${styles.tableRow} ${isNegotiation ? styles.negotiationRow : ''}`}>
                           <td className={styles.tableDate}>
-                            <strong>{format(eventDate, 'dd')}</strong>
-                            <small>{format(eventDate, 'eee', { locale: es })}</small>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                              <div>
+                                <strong>{format(eventDate, 'dd')}</strong>
+                                <small>{format(eventDate, 'eee', { locale: es })}</small>
+                              </div>
+                              {overlaps.length > 0 && (
+                                <div className={styles.warningContainerTable} onClick={(e) => { e.stopPropagation(); setOpenTooltipId(openTooltipId === ev.id ? null : ev.id); }}>
+                                  <span className={styles.warningIconSmall}>⚠️</span>
+                                  {openTooltipId === ev.id && (
+                                    <div className={styles.warningDropdown}>
+                                      A este concierto no podrá venir a tocar {overlaps.join(', ')} (Día pedido)
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </td>
                           <td className={styles.tableTime}>{format(eventDate, 'HH:mm')}</td>
                           <td>

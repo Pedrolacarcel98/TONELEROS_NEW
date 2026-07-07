@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import styles from './EventForm.module.css';
 import { eventsService } from '../../services/eventsService';
+import { checkVacationOverlap } from '../../utils/vacationUtils';
 
-export const EventForm = ({ onCreated, initialData, onCancel }) => {
+export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) => {
   const [visible, setVisible] = useState(false);
   const [form, setForm] = useState({
     tipo: '',
     fecha: '',
+    hora_comienzo: '',
+    hora_llegada: '',
     direccion: '',
     pContacto: '',
     tlf: '',
     presupuesto: '',
     senal: '',
+    senal_repartida: false,
+    cobrador: '',
     observaciones: '',
     equipo: false,
     estado: 'NEGOCIACION',
@@ -43,8 +48,11 @@ export const EventForm = ({ onCreated, initialData, onCancel }) => {
         tlf: initialData.tlf?.toString() || '',
         presupuesto: initialData.presupuesto?.toString() || '',
         senal: initialData.senal?.toString() || '',
-        // Handle ISO date for datetime-local (slice to YYYY-MM-DDTHH:MM)
-        fecha: initialData.fecha ? initialData.fecha.slice(0, 16) : '',
+        senal_repartida: initialData.senal_repartida || false,
+        cobrador: initialData.cobrador || '',
+        fecha: initialData.fecha ? initialData.fecha.slice(0, 10) : '',
+        hora_comienzo: initialData.hora_comienzo || '',
+        hora_llegada: initialData.hora_llegada || '',
       });
       setVisible(true);
     }
@@ -52,7 +60,37 @@ export const EventForm = ({ onCreated, initialData, onCancel }) => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+    let newForm = { ...form, [name]: type === 'checkbox' ? checked : value };
+
+    // Validación: No permitir señal si está en negociación
+    if (name === 'senal' && Number(value) > 0 && newForm.estado === 'NEGOCIACION') {
+      alert("Un evento en negociación nunca debe tener señal. La señal solo se cobra con eventos confirmados.");
+      return;
+    }
+
+    // Si cambian el estado a negociación y ya había señal, la borramos
+    if (name === 'estado' && value === 'NEGOCIACION' && Number(newForm.senal) > 0) {
+      alert("Al pasar a negociación, la señal se borrará. Un evento en negociación no puede tener señal.");
+      newForm.senal = '';
+      newForm.senal_repartida = false;
+      newForm.cobrador = '';
+    }
+
+    if (name === 'hora_comienzo' && value) {
+      try {
+        const [hours, minutes] = value.split(':').map(Number);
+        const d = new Date();
+        d.setHours(hours, minutes, 0, 0);
+        d.setMinutes(d.getMinutes() - 45);
+        const resHours = String(d.getHours()).padStart(2, '0');
+        const resMins = String(d.getMinutes()).padStart(2, '0');
+        newForm.hora_llegada = `${resHours}:${resMins}`;
+      } catch (err) {
+        console.error("Error al calcular hora de llegada", err);
+      }
+    }
+
+    setForm(newForm);
   };
 
   const handleToggle = () => {
@@ -64,6 +102,18 @@ export const EventForm = ({ onCreated, initialData, onCancel }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    // Verificamos vacaciones si hay fecha
+    if (form.fecha) {
+      const overlaps = checkVacationOverlap(form.fecha, vacations);
+      if (overlaps.length > 0) {
+        const msg = `⚠️ ATENCIÓN: ${overlaps.join(', ')} tiene(n) vacaciones este día.\n\n¿Estás seguro de que quieres crear/guardar la actuación?`;
+        if (!window.confirm(msg)) {
+          return;
+        }
+      }
+    }
+
     setIsSaving(true);
     setError(null);
     try {
@@ -73,6 +123,7 @@ export const EventForm = ({ onCreated, initialData, onCancel }) => {
         presupuesto: parseInt(form.presupuesto || 0, 10),
         senal: parseInt(form.senal || 0, 10),
         fecha: form.fecha,
+        cobrador: parseInt(form.senal || 0, 10) > 0 ? form.cobrador : null,
       };
 
       if (isEditing) {
@@ -81,7 +132,7 @@ export const EventForm = ({ onCreated, initialData, onCancel }) => {
         await eventsService.createEvent(payload);
       }
 
-      setForm({ tipo: '', fecha: '', direccion: '', pContacto: '', tlf: '', presupuesto: '', senal: '', observaciones: '', equipo: false, estado: 'NEGOCIACION' });
+      setForm({ tipo: '', fecha: '', hora_comienzo: '', hora_llegada: '', direccion: '', pContacto: '', tlf: '', presupuesto: '', senal: '', senal_repartida: false, cobrador: '', observaciones: '', equipo: false, estado: 'NEGOCIACION' });
       if (onCreated) onCreated();
       if (onCancel) onCancel();
       setVisible(false);
@@ -111,25 +162,54 @@ export const EventForm = ({ onCreated, initialData, onCancel }) => {
             <div className={styles.grid}>
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Tipo de Evento</label>
-                <input 
+                <select 
                   className={styles.input}
                   name="tipo" 
                   value={form.tipo} 
                   onChange={handleChange} 
-                  placeholder="Ej: Boda, Concierto..."
+                  required 
+                >
+                  <option value="" disabled>Selecciona un tipo...</option>
+                  <option value="Boda">Boda</option>
+                  <option value="Fiesta">Fiesta</option>
+                  <option value="Feria">Feria</option>
+                  <option value="Feria de Sevilla">Feria de Sevilla</option>
+                  <option value="Cumpleaños">Cumpleaños</option>
+                  <option value="Puesta de Largo">Puesta de Largo</option>
+                </select>
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label className={styles.label}>Fecha</label>
+                <input 
+                  className={styles.input}
+                  name="fecha" 
+                  type="date" 
+                  value={form.fecha ? form.fecha.split('T')[0] : ''} 
+                  onChange={handleChange} 
                   required 
                 />
               </div>
 
               <div className={styles.inputGroup}>
-                <label className={styles.label}>Fecha y Hora</label>
+                <label className={styles.label}>Hora Comienzo</label>
                 <input 
                   className={styles.input}
-                  name="fecha" 
-                  type="datetime-local" 
-                  value={form.fecha} 
+                  name="hora_comienzo" 
+                  type="time" 
+                  value={form.hora_comienzo} 
                   onChange={handleChange} 
-                  required 
+                />
+              </div>
+
+              <div className={styles.inputGroup}>
+                <label className={styles.label}>Hora Llegada (Automática)</label>
+                <input 
+                  className={styles.input}
+                  name="hora_llegada" 
+                  type="time" 
+                  value={form.hora_llegada} 
+                  onChange={handleChange} 
                 />
               </div>
 
@@ -187,8 +267,43 @@ export const EventForm = ({ onCreated, initialData, onCancel }) => {
                   value={form.senal} 
                   onChange={handleChange} 
                   placeholder="0.00"
+                  disabled={form.estado === 'NEGOCIACION'}
+                  title={form.estado === 'NEGOCIACION' ? "No se puede añadir señal a un evento en negociación" : ""}
                 />
               </div>
+
+              {Number(form.senal) > 0 && (
+                <>
+                  <div className={styles.inputGroup}>
+                    <label className={styles.label}>¿Quién ha cobrado la señal?</label>
+                    <select 
+                      className={styles.input}
+                      name="cobrador" 
+                      value={form.cobrador} 
+                      onChange={handleChange}
+                      required
+                    >
+                      <option value="">Selecciona un integrante...</option>
+                      <option value="Luis">Luis</option>
+                      <option value="Pedro">Pedro</option>
+                      <option value="Alfonso">Alfonso</option>
+                      <option value="Pipa">Pipa</option>
+                    </select>
+                  </div>
+
+                  <div className={styles.inputGroupCheckbox}>
+                    <label className={styles.checkboxLabel}>
+                      <input 
+                        name="senal_repartida" 
+                        type="checkbox" 
+                        checked={form.senal_repartida} 
+                        onChange={handleChange} 
+                      /> 
+                      <span>Señal Repartida (entre todos)</span>
+                    </label>
+                  </div>
+                </>
+              )}
 
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Estado del Evento</label>

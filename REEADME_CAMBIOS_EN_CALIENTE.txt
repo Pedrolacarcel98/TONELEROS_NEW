@@ -1,0 +1,15 @@
+
+SISTEMA DE VACACIONES
+
+[12:30, 2/7/2026] Pedro Lacárcel ⚡: Se me acaba de ocurrir un apartado "vacaciones" o "dias libres" para que quede claro quien va y quien no y que salte un pop up de confirmacion diciendo que "quien sea" no esta para esa actuacion
+[12:30, 2/7/2026] Pedro Lacárcel ⚡: Asi nos podemos pedir dias libres desde la web tb
+[12:31, 2/7/2026] Pedro Lacárcel ⚡: Y que llegue correito para avisar si os parece
+
+
+falta subir cambios a prod de todo esto
+
+cambiar sobre todo n8n. importar de dev a prod
+
+ pabloantoniovazquezdelestad@gmail.com, luisfelizon@gmail.com, bidifon21@gmail.com
+
+funciona TODO en dev PERFECTAMENTE

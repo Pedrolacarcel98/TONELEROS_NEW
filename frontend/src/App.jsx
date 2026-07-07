@@ -10,6 +10,7 @@ import DocumentViewer from './pages/DocumentViewer';
 import Media from './pages/Media';
 import Clients from './pages/Clients';
 import Integrations from './pages/Integrations';
+import Vacations from './pages/Vacations';
 
 function App() {
 
@@ -54,6 +55,9 @@ function App() {
   }
   if (currentHash === '#/integrations') {
     return <Integrations />;
+  }
+  if (currentHash === '#/vacations') {
+    return <Vacations />;
   }
   
   return <Dashboard />;
