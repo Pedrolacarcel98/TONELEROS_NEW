@@ -5,12 +5,14 @@ import EventsList from '../components/events/EventsList';
 import EventCalendar from '../components/events/EventCalendar';
 import EventDetailModal from '../components/events/EventDetailModal';
 import eventsService from '../services/eventsService';
+import { vacationsService } from '../services/vacationsService';
 import styles from './Events.module.css';
 
 export const Events = () => {
   const [view, setView] = useState('list'); // 'list' o 'calendar'
   const [showHistory, setShowHistory] = useState(false);
   const [events, setEvents] = useState([]);
+  const [vacations, setVacations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
   const [editingEvent, setEditingEvent] = useState(null);
@@ -23,8 +25,18 @@ export const Events = () => {
   const fetchEvents = async () => {
     try {
       setLoading(true);
-      const data = await eventsService.getEvents(showHistory);
-      setEvents(data);
+      const [eventsData, vacationsData] = await Promise.all([
+        eventsService.getEvents(showHistory),
+        vacationsService.getVacations()
+      ]);
+      setEvents(eventsData);
+      setVacations(vacationsData);
+      if (selectedEvent) {
+        const updatedSelected = data.find(e => e.id === selectedEvent.id);
+        if (updatedSelected) {
+          setSelectedEvent(updatedSelected);
+        }
+      }
     } catch (error) {
       console.error('Error fetching events:', error);
     } finally {
@@ -101,6 +113,7 @@ export const Events = () => {
               onCreated={handleCreated} 
               initialData={editingEvent}
               onCancel={handleCancelEdit}
+              vacations={vacations}
             />
           </section>
         )}
@@ -114,6 +127,7 @@ export const Events = () => {
                 events={events}
                 onEdit={handleEdit}
                 onRefresh={handleCreated}
+                vacations={vacations}
               />
             ) : (
               <EventCalendar 

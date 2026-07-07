@@ -84,13 +84,23 @@ def import_legacy_data(db: Session):
                     except: return 0
 
                 fecha_obj = datetime.now()
+                hora_comienzo_str = "00:00"
+                hora_llegada_str = "00:00"
                 try:
-                    fecha_obj = datetime.strptime(item.get("fecha"), "%Y-%m-%d %H:%M:%S")
+                    dt = datetime.strptime(item.get("fecha"), "%Y-%m-%d %H:%M:%S")
+                    fecha_obj = dt.date()
+                    hora_comienzo_str = dt.strftime("%H:%M")
+                    
+                    from datetime import timedelta
+                    hora_llegada_dt = dt - timedelta(minutes=45)
+                    hora_llegada_str = hora_llegada_dt.strftime("%H:%M")
                 except: pass
 
                 new_event = Event(
                     tipo=item.get("tipo") or "General",
                     fecha=fecha_obj,
+                    hora_comienzo=hora_comienzo_str,
+                    hora_llegada=hora_llegada_str,
                     direccion=item.get("direccion") or "Sin dirección",
                     pContacto=item.get("pContacto") or "Sin contacto",
                     tlf=clean_int(item.get("tlf")),
