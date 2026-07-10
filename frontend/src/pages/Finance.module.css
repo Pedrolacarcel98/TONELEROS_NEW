@@ -1,31 +1,392 @@
 .page {
-  padding-bottom: 60px;
+  padding-bottom: 80px;
 }
 
 .header {
-  margin: 40px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 32px 0 24px;
+  flex-wrap: wrap;
+  gap: 16px;
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2.25rem;
   font-weight: 800;
-  margin-bottom: 8px;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .subtitle {
-  color: var(--text-secondary);
-  font-size: 1.1rem;
+  color: #71717a;
+  font-size: 1rem;
 }
 
-.contentGrid {
+/* Selector de Año */
+.yearSelectorWrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.selectLabel {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #a1a1aa;
+}
+
+.yearSelect {
+  background-color: #09090b;
+  border: 1px solid #27272a;
+  color: #fff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.yearSelect:focus {
+  border-color: #52525b;
+}
+
+/* Barra de Filtro de Meses */
+.monthBar {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 4px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid #18181b;
+  scrollbar-width: none; /* Firefox */
+}
+
+.monthBar::-webkit-scrollbar {
+  display: none; /* Safari/Chrome */
+}
+
+.monthBtn {
+  background: transparent;
+  border: none;
+  color: #71717a;
+  padding: 8px 16px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 20px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.monthBtn:hover {
+  color: #fff;
+  background-color: #18181b;
+}
+
+.monthBtnActive {
+  color: #fff !important;
+  background-color: #fff !important;
+  color: #000 !important;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+/* Rejilla Superior: Resumen + Gráfico */
+.dashboardTopGrid {
   display: grid;
-  grid-template-columns: 1fr 1.5fr;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 24px;
+  margin-bottom: 40px;
+}
+
+.metricsWrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Tarjeta del Gráfico */
+.chartCard {
+  background: rgba(18, 18, 18, 0.4);
+  border: 1px solid #18181b;
+  border-radius: 16px;
+  padding: 24px;
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chartTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chartSubtitle {
+  font-size: 0.75rem;
+  color: #71717a;
+  font-weight: 400;
+}
+
+.chartWrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 180px;
+  border-bottom: 1px solid #27272a;
+  padding-bottom: 8px;
+  gap: 8px;
+}
+
+/* Columna del Gráfico */
+.chartColumn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  height: 100%;
+  justify-content: flex-end;
+  transition: all 0.2s ease;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.chartColumn:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.chartColumnActive {
+  background-color: rgba(255, 255, 255, 0.05) !important;
+  border: 1px dashed #3f3f46;
+}
+
+.barContainer {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 90%;
+  width: 100%;
+  justify-content: center;
+  position: relative;
+}
+
+.incomeBar {
+  background: linear-gradient(180deg, #10b981 0%, #047857 100%);
+  width: 8px;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.expenseBar {
+  background: linear-gradient(180deg, #ef4444 0%, #b91c1c 100%);
+  width: 8px;
+  border-radius: 4px 4px 0 0;
+  min-height: 2px;
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+/* Tooltips */
+.chartTooltip {
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #09090b;
+  color: #fff;
+  font-size: 0.7rem;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid #27272a;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+.incomeBar:hover .chartTooltip,
+.expenseBar:hover .chartTooltip {
+  opacity: 1;
+}
+
+.monthLabel {
+  font-size: 0.7rem;
+  color: #71717a;
+  margin-top: 8px;
+  font-weight: 600;
+}
+
+.chartColumnActive .monthLabel {
+  color: #fff;
+}
+
+/* Leyenda del gráfico */
+.legend {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: #a1a1aa;
+}
+
+.legendColor {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.incomeColor {
+  background-color: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.4);
+}
+
+.expenseColor {
+  background-color: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
+}
+
+/* Doble Columna de Detalles */
+.ledgerGrid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
   gap: 32px;
   align-items: flex-start;
 }
 
+.ledgerColumn {
+  background: rgba(12, 12, 12, 0.25);
+  border: 1px solid #18181b;
+  border-radius: 16px;
+  padding: 24px;
+}
+
+.ledgerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.ledgerTitle {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.incomeIndicatorDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.5);
+}
+
+.expenseIndicatorDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ef4444;
+  box-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+}
+
+.ledgerBadge {
+  font-size: 0.75rem;
+  color: #71717a;
+  background-color: #18181b;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.ledgerList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ledgerItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: rgba(9, 9, 11, 0.5);
+  border: 1px solid #18181b;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+}
+
+.ledgerItem:hover {
+  border-color: #27272a;
+  background-color: rgba(255, 255, 255, 0.01);
+}
+
+.ledgerMainInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ledgerConcept {
+  font-size: 0.925rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ledgerMeta {
+  font-size: 0.75rem;
+  color: #71717a;
+}
+
+.ledgerAmountPositive {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #10b981;
+}
+
+.expenseFormWrapper {
+  margin-bottom: 24px;
+}
+
+.loadingText,
+.emptyLedger {
+  text-align: center;
+  padding: 48px 16px;
+  color: #71717a;
+  font-size: 0.875rem;
+  font-style: italic;
+  border: 1px dashed #18181b;
+  border-radius: 12px;
+  background-color: rgba(9, 9, 11, 0.2);
+}
+
+/* Responsivo */
 @media (max-width: 992px) {
-  .contentGrid {
+  .dashboardTopGrid,
+  .ledgerGrid {
     grid-template-columns: 1fr;
+    gap: 24px;
   }
 }

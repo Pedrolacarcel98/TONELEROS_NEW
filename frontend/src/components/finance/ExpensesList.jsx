@@ -1,32 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import financeService from '../../services/financeService';
 import styles from './ExpensesList.module.css';
 
-export const ExpensesList = ({ refreshKey }) => {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(true);
+export const ExpensesList = ({ items = [], onRefresh, loading = false }) => {
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ concepto: '', cantidad: '', observaciones: '' });
 
-  const load = async () => {
-    setLoading(true);
-    try {
-      const data = await financeService.getExpenses();
-      setItems(data || []);
-    } catch (e) { 
-      console.error(e); 
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => { load(); }, [refreshKey]);
-
-  if (loading) return <div className={styles.empty}>Cargando gastos...</div>;
+  if (loading) return <div className={styles.empty}>Actualizando gastos...</div>;
   
   if (items.length === 0) return (
     <div className={styles.empty}>
-      <p>No hay gastos registrados aún.</p>
+      <p>No hay gastos en este periodo.</p>
     </div>
   );
 
@@ -52,8 +36,8 @@ export const ExpensesList = ({ refreshKey }) => {
         observaciones: editForm.observaciones 
       };
       await financeService.updateExpense(id, payload);
-      await load();
       cancelEdit();
+      if (onRefresh) await onRefresh();
     } catch (e) { 
       console.error(e); 
       alert('Error al actualizar el gasto');
@@ -64,7 +48,7 @@ export const ExpensesList = ({ refreshKey }) => {
     if (!window.confirm('¿Borrar este gasto? Esta acción no se puede deshacer.')) return;
     try {
       await financeService.deleteExpense(id);
-      await load();
+      if (onRefresh) await onRefresh();
     } catch (e) { 
       console.error(e); 
       alert('Error al borrar el gasto');
@@ -81,7 +65,7 @@ export const ExpensesList = ({ refreshKey }) => {
                 <input 
                   className={styles.editInput}
                   value={editForm.concepto} 
-                  onChange={e=>setEditForm(f=>({...f, concepto:e.target.value}))} 
+                  onChange={e => setEditForm(f => ({ ...f, concepto: e.target.value }))} 
                   placeholder="Concepto"
                 />
                 <input 
@@ -89,18 +73,18 @@ export const ExpensesList = ({ refreshKey }) => {
                   type="number" 
                   step="0.01" 
                   value={editForm.cantidad} 
-                  onChange={e=>setEditForm(f=>({...f, cantidad:e.target.value}))} 
+                  onChange={e => setEditForm(f => ({ ...f, cantidad: e.target.value }))} 
                   placeholder="Cantidad"
                 />
               </div>
               <textarea 
                 className={styles.editTextarea}
                 value={editForm.observaciones} 
-                onChange={e=>setEditForm(f=>({...f, observaciones:e.target.value}))} 
+                onChange={e => setEditForm(f => ({ ...f, observaciones: e.target.value }))} 
                 placeholder="Observaciones"
               />
               <div className={styles.editActions}>
-                <button className={styles.saveBtn} onClick={()=>saveEdit(it.id)}>Guardar</button>
+                <button className={styles.saveBtn} onClick={() => saveEdit(it.id)}>Guardar</button>
                 <button className={styles.cancelBtn} onClick={cancelEdit}>Cancelar</button>
               </div>
             </div>
@@ -108,15 +92,18 @@ export const ExpensesList = ({ refreshKey }) => {
             <div className={styles.content}>
               <div className={styles.info}>
                 <h4 className={styles.concepto}>{it.concepto}</h4>
-                {it.observaciones && <p className={styles.observaciones}>{it.observaciones}</p>}
+                <p className={styles.observaciones}>
+                  {new Date(it.created_at).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  {it.observaciones && ` • ${it.observaciones}`}
+                </p>
               </div>
               <div className={styles.data}>
                 <div className={styles.amount}>-{parseFloat(it.cantidad || 0).toLocaleString()} €</div>
                 <div className={styles.actions}>
-                  <button className={styles.actionBtn} onClick={()=>startEdit(it)} title="Editar">
+                  <button className={styles.actionBtn} onClick={() => startEdit(it)} title="Editar">
                     Editar
                   </button>
-                  <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={()=>doDelete(it.id)} title="Borrar">
+                  <button className={`${styles.actionBtn} ${styles.deleteBtn}`} onClick={() => doDelete(it.id)} title="Borrar">
                     Borrar
                   </button>
                 </div>

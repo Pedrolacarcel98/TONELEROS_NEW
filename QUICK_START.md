@@ -10,7 +10,7 @@
 
 ```bash
 cd TONELEROS_APP
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 Espera 30-60 segundos mientras instala dependencias...
@@ -59,11 +59,11 @@ Dado que usas Docker en una VM de Google Cloud, los pasos son los siguientes:
    ```
 4. Reconstruye y levanta los contenedores con los nuevos cambios en segundo plano:
    ```bash
-   docker-compose -f docker-compose.prod.yml up -d --build
+   docker compose -f docker-compose.prod.yml up -d --build
    ```
 5. Ejecuta la migración de datos dentro del contenedor del backend activo (esto no detendrá la aplicación):
    ```bash
-   docker-compose -f docker-compose.prod.yml exec backend python migrate_times.py
+   docker compose -f docker-compose.prod.yml exec backend python migrate_times.py
    ```
 6. Verás un mensaje de éxito. ¡Tus datos se habrán migrado al nuevo formato de fecha y hora!
 
@@ -73,19 +73,19 @@ Dado que usas Docker en una VM de Google Cloud, los pasos son los siguientes:
 
 ```bash
 # Ver logs en vivo
-docker-compose logs -f
+docker compose logs -f
 
 # Ver solo el frontend
-docker-compose logs -f frontend
+docker compose logs -f frontend
 
 # Ver solo el backend
-docker-compose logs -f backend
+docker compose logs -f backend
 
 # Verificar que los contenedores están corriendo
 docker ps
 
 # Detener todo
-docker-compose down
+docker compose down
 
 # Detener y limpiar
 docker-compose down -v
