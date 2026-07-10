@@ -197,6 +197,34 @@
   color: white !important;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.createBudgetBtn {
+  background: transparent;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.createBudgetBtn:hover {
+  background: var(--accent);
+  color: var(--bg-color);
+}
+
 .spinnerSmall {
   width: 14px;
   height: 14px;
@@ -210,6 +238,8 @@
 
 @media (max-width: 768px) {
   .pageHeader { flex-direction: column; align-items: stretch; margin: 20px 0; }
+  .headerActions { flex-direction: column; align-items: stretch; gap: 12px; }
   .uploadForm { flex-direction: column; align-items: stretch; }
   .fileInput { width: 100%; }
+  .createBudgetBtn { width: 100%; text-align: center; }
 }

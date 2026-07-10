@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import styles from './ExpenseForm.module.css';
 import financeService from '../../services/financeService';
-import ExpensesList from './ExpensesList';
 
-export const ExpenseForm = ({ onCreated, refreshKey }) => {
+export const ExpenseForm = ({ onCreated }) => {
   const [visible, setVisible] = useState(false);
   const [form, setForm] = useState({ concepto: '', cantidad: '', observaciones: '' });
   const [loading, setLoading] = useState(false);
@@ -16,23 +15,30 @@ export const ExpenseForm = ({ onCreated, refreshKey }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true); setError(null);
+    setLoading(true); 
+    setError(null);
     try {
-      const payload = { concepto: form.concepto, cantidad: parseFloat(form.cantidad || 0), observaciones: form.observaciones };
+      const payload = { 
+        concepto: form.concepto, 
+        cantidad: parseFloat(form.cantidad || 0), 
+        observaciones: form.observaciones 
+      };
       await financeService.createExpense(payload);
       setForm({ concepto: '', cantidad: '', observaciones: '' });
       setVisible(false);
       if (onCreated) onCreated();
     } catch (err) {
       setError(err.response?.data?.detail || err.message || 'Error al guardar el gasto');
-    } finally { setLoading(false); }
+    } finally { 
+      setLoading(false); 
+    }
   };
 
   return (
     <div className={styles.container}>
       <div className={styles.card}>
         <div className={styles.header}>
-          <h2 className={styles.title}>Listado de Gastos</h2>
+          <h2 className={styles.title}>Registrar Gasto</h2>
           <button 
             onClick={() => setVisible(v => !v)} 
             className={`${styles.toggleBtn} ${visible ? styles.cancelBtn : ''}`}
@@ -89,10 +95,6 @@ export const ExpenseForm = ({ onCreated, refreshKey }) => {
             </form>
           </div>
         )}
-
-        <div className={styles.listSection}>
-          <ExpensesList refreshKey={refreshKey} />
-        </div>
       </div>
     </div>
   );

@@ -140,23 +140,31 @@ const Documents = () => {
       <div className="container">
         <div className={styles.pageHeader}>
           <h1>Documentos</h1>
-          <form onSubmit={onUpload} className={styles.uploadForm}>
-            <div className={styles.fileInputWrapper}>
-              <input 
-                ref={fileRef} 
-                type="file" 
-                onChange={e => setFile(e.target.files[0])} 
-                className={styles.fileInput}
-              />
-            </div>
+          <div className={styles.headerActions}>
             <button 
-              type="submit" 
-              disabled={loading || !file} 
-              className={styles.uploadBtn}
+              onClick={() => window.open('/presupuesto.html', '_blank')}
+              className={styles.createBudgetBtn}
             >
-              {loading ? 'Subiendo...' : 'Subir Documento'}
+              📝 Crear Presupuesto
             </button>
-          </form>
+            <form onSubmit={onUpload} className={styles.uploadForm}>
+              <div className={styles.fileInputWrapper}>
+                <input 
+                  ref={fileRef} 
+                  type="file" 
+                  onChange={e => setFile(e.target.files[0])} 
+                  className={styles.fileInput}
+                />
+              </div>
+              <button 
+                type="submit" 
+                disabled={loading || !file} 
+                className={styles.uploadBtn}
+              >
+                {loading ? 'Subiendo...' : 'Subir Documento'}
+              </button>
+            </form>
+          </div>
         </div>
 
         {loading && items.length === 0 ? (

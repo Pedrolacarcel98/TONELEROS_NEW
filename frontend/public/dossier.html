@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dossier de Repertorio - Toneleros</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- html2pdf.js CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .font-brand {
+      font-family: 'Cinzel', serif;
+    }
+    
+    /* Reglas de maquetación estrictas A4 */
+    .pdf-page {
+      width: 210mm;
+      height: 297mm;
+      padding: 18mm 15mm;
+      margin: 0 auto;
+      background: #000000;
+      color: #ffffff;
+      box-sizing: border-box;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    
+    .pdf-page + .pdf-page {
+      page-break-before: always;
+    }
+
+    /* Quitar sombras, bordes y márgenes al generar el PDF para evitar desbordes de píxeles */
+    .pdf-generating .pdf-page {
+      box-shadow: none !important;
+      border: none !important;
+      margin: 0 !important;
+    }
+
+    /* Columnas balanceadas para que quepan todas las canciones en una sola página */
+    .repertoire-columns {
+      column-count: 3;
+      column-gap: 1.2rem;
+      height: 225mm; /* Forzamos la altura máxima ajustada para evitar desbordamiento */
+    }
+
+    /* Evitar que un popurrí se parta entre columnas */
+    .avoid-break {
+      break-inside: avoid-column;
+      page-break-inside: avoid;
+      margin-bottom: 0.85rem;
+    }
+
+    @media print {
+      body {
+        background: #000000;
+        padding: 0;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .pdf-page {
+        box-shadow: none !important;
+        margin: 0 !important;
+        border: none !important;
+      }
+    }
+  </style>
+</head>
+<body class="bg-zinc-950 text-zinc-100 min-h-screen flex flex-col">
+
+  <header class="no-print border-b border-zinc-800 bg-zinc-900/90 backdrop-blur px-6 py-4 flex flex-wrap items-center justify-between gap-4 sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-zinc-950 border border-zinc-800 rounded-full flex items-center justify-center p-1 shadow-md">
+        <!-- Logo original de Toneleros -->
+        <img src="logo.png" alt="Logo Toneleros" class="w-full h-full object-contain" onerror="this.style.display='none'">
+      </div>
+      <div>
+        <h1 class="text-sm font-bold tracking-widest font-brand text-white">TONELEROS</h1>
+        <p class="text-xs text-zinc-400">Generador de Dossier de Canciones Compacto</p>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <button onclick="downloadPDF()" class="bg-white hover:bg-zinc-200 text-zinc-950 font-bold px-5 py-2 rounded-lg shadow-lg flex items-center gap-2 transition duration-200 text-xs">
+        <i data-lucide="file-down" class="w-4 h-4"></i>
+        <span>Descargar PDF (2 Páginas)</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="flex-1 flex flex-col lg:flex-row">
+    
+    <aside class="no-print w-full lg:w-[380px] bg-zinc-900 border-r border-zinc-800 p-5 flex flex-col gap-5 overflow-y-auto max-h-[calc(100vh-73px)]">
+      
+      <div class="bg-zinc-950/60 p-4 rounded-xl border border-zinc-800 space-y-1.5">
+        <div class="flex items-center gap-2 text-white font-bold text-xs uppercase tracking-wider">
+          <i data-lucide="info" class="text-zinc-400 w-4 h-4"></i>
+          <span>Dossier Súper Compacto</span>
+        </div>
+        <p class="text-[11px] text-zinc-400 leading-relaxed">
+          Hemos comprimido el documento para que ocupe exactamente <strong>2 páginas</strong> en total: Portada limpia + Hoja de canciones en 3 columnas. Puedes activar o desactivar canciones para personalizarlo al momento.
+        </p>
+      </div>
+
+      <!-- Ajustes de contacto -->
+      <div class="space-y-3">
+        <div class="flex items-center gap-2 border-b border-zinc-800 pb-1">
+          <i data-lucide="phone" class="w-3.5 h-3.5 text-zinc-400"></i>
+          <h2 class="text-[10px] font-bold uppercase tracking-wider text-zinc-300">Datos de Contacto</h2>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[9px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">Teléfono</label>
+            <input type="text" id="input-phone" value="+34 600 000 000" oninput="updateLiveFields()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-zinc-500">
+          </div>
+          <div>
+            <label class="block text-[9px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">Instagram</label>
+            <input type="text" id="input-social" value="@toneleros_musica" oninput="updateLiveFields()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-zinc-500">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <label class="block text-[9px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">Email</label>
+            <input type="text" id="input-email" value="tonelerosmusica@gmail.com" oninput="updateLiveFields()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-zinc-500">
+          </div>
+          <div>
+            <label class="block text-[9px] font-semibold uppercase tracking-wider text-zinc-400 mb-1">Ubicación</label>
+            <input type="text" id="input-location" value="Sevilla, España" oninput="updateLiveFields()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-zinc-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- Selección rápida de repertorio -->
+      <div class="space-y-3">
+        <div class="flex items-center justify-between border-b border-zinc-800 pb-1">
+          <div class="flex items-center gap-2">
+            <i data-lucide="music-2" class="w-3.5 h-3.5 text-zinc-400"></i>
+            <h2 class="text-[10px] font-bold uppercase tracking-wider text-zinc-300">Selección de Popurrís</h2>
+          </div>
+          <span class="text-[9px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded-full" id="total-songs-badge">0 temas</span>
+        </div>
+
+        <div class="flex gap-1.5">
+          <button onclick="toggleAllSongs(true)" class="text-[10px] text-zinc-400 hover:text-white bg-zinc-950 border border-zinc-800 py-1 rounded flex-1 transition">Activar todos</button>
+          <button onclick="toggleAllSongs(false)" class="text-[10px] text-zinc-400 hover:text-white bg-zinc-950 border border-zinc-800 py-1 rounded flex-1 transition">Desactivar todos</button>
+        </div>
+
+        <!-- Lista de categorías editables -->
+        <div class="space-y-2 max-h-[280px] overflow-y-auto pr-1" id="configurator-categories-list">
+          <!-- Generado dinámicamente -->
+        </div>
+      </div>
+
+    </aside>
+
+    <section class="flex-1 bg-zinc-900 overflow-y-auto p-4 md:p-6 flex justify-center items-start">
+      
+      <div class="scale-95 md:scale-100 origin-top transition-transform duration-200">
+        
+        <!-- CONTENEDOR VIRTUAL DE IMPRESIÓN (Exactamente 2 páginas en tonos blanco y negro invertidos) -->
+        <div id="pdf-to-print" class="flex flex-col gap-6 text-white select-none">
+          
+          <!-- PÁGINA 1: PORTADA GENÉRICA EDITORIAL -->
+          <div class="pdf-page border border-zinc-800" id="pdf-page-1">
+            <!-- Detalles decorativos minimalistas -->
+            <div class="absolute top-10 left-10 right-10 border-t-2 border-white h-1"></div>
+            <div class="absolute top-12 left-10 text-[9px] tracking-[0.3em] text-zinc-400 uppercase font-bold">REPERTORIO GENERAL</div>
+            <div class="absolute top-12 right-10 text-[9px] tracking-[0.2em] text-zinc-400 font-mono">EDICIÓN 2026</div>
+
+            <!-- Centro: LOGO ORIGINAL (logo.png) centrado y elegante -->
+            <div class="flex flex-col items-center justify-center flex-1 my-12">
+              <div class="w-64 h-64 flex items-center justify-center mb-10">
+                <!-- Imagen original suministrada -->
+                <img src="logo.png" alt="Toneleros" class="w-full h-full object-contain" onerror="this.src='https://placehold.co/300x300/000000/ffffff?text=TONELEROS'">
+              </div>
+
+              <!-- Título Limpio de Portada -->
+              <h2 class="font-brand text-5xl font-black tracking-[0.2em] text-center uppercase border-b-4 border-white pb-4 mb-4 max-w-[90%]">
+                REPERTORIO
+              </h2>
+            </div>
+
+            <!-- Parte inferior: Datos generales del grupo -->
+            <div class="border-t border-zinc-800 pt-6 flex justify-between items-end">
+              <div>
+                <p class="text-[9px] uppercase tracking-[0.15em] text-zinc-400 font-bold mb-1">Versiones Flamenco y Pop</p>
+                <p class="text-xl font-bold font-brand tracking-wider text-white">TONELEROS</p>
+              </div>
+              <div class="text-right">
+                <p id="display-location" class="text-xs font-bold text-white">Sevilla, España</p>
+                <p id="display-phone" class="text-xs text-zinc-300">+34 636 98 24 36</p>
+                <p id="display-phone-2" class="text-xs text-zinc-300">+34 671 01 16 32</p>
+
+                <p id="display-social" class="text-[10px] text-zinc-400 font-mono">@toneleros</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- PÁGINA 2: HOJA ÚNICA DE CANCIONES COMPACTADA -->
+          <div class="pdf-page border border-zinc-800" id="pdf-page-2">
+            <!-- Cabecera de Página de Repertorio -->
+            <div class="flex justify-between items-center border-b-2 border-white pb-3">
+              <span class="font-brand font-bold tracking-[0.25em] text-[10px]">TONELEROS • REPERTORIO GENERAL</span>
+              <span class="text-[9px] text-zinc-400 uppercase font-mono tracking-widest">Pág. 2</span>
+            </div>
+
+            <!-- Contenedor de 3 Columnas Dinámico -->
+            <div id="repertoire-column-wrapper" class="repertoire-columns mt-6">
+              <!-- Renderizado automático de los popurrís seleccionados -->
+            </div>
+
+            <!-- Pie de página integrado -->
+            <div class="border-t border-zinc-800 pt-3 flex justify-between items-center text-[9px] text-zinc-400 font-mono">
+              <span id="display-footer-location">Sevilla</span>
+              <span class="font-brand font-bold tracking-widest">TONELEROS • 2026</span>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Repertorio Oficial Completo extraído fielmente del documento "REPERTORIO.pdf"
+    const rawRepertoire = [
+      {
+        id: "siempre-asi",
+        title: "Popurrí Siempre Así",
+        songs: [
+          "Cuando vuelva a Sevilla en primavera",
+          "Al compás de tu latido",
+          "Tómame o déjame",
+          "Tú serás mi amanecer",
+          "Esa mujer",
+          "Si los hombres han llegado hasta la luna",
+          "Se te nota en la mirada",
+          "Color Esperanza",
+          "Como una mujer",
+          "Sevillanía",
+          "Con la primavera",
+          "Las cosas pequeñitas"
+        ],
+        selected: true
+      },
+      {
+        id: "pop-rumbas",
+        title: "Pop & Rumbas",
+        songs: [
+          "Yo romperé tus fotos (La Guardia)",
+          "Déjame (Los Secretos)",
+          "Cuando brille el sol (La Guardia)",
+          "Me maten (C. Tangana)",
+          "Los tontos (C. Tangana)",
+          "Alegría de vivir"
+        ],
+        selected: true
+      },
+      {
+        id: "arrebato",
+        title: "Arrebato de Amor",
+        songs: [
+          "Arrebato de amor",
+          "Hawái",
+          "Tu historia está mal contada",
+          "Vida de rico"
+        ],
+        selected: true
+      },
+      {
+        id: "disney",
+        title: "Popurrí Disney",
+        songs: [
+          "Hay un amigo en mí",
+          "Bajo el mar",
+          "El libro de la selva"
+        ],
+        selected: true
+      },
+      {
+        id: "regueton",
+        title: "Popurrí Reguetón",
+        songs: [
+          "El perdón",
+          "Bailando",
+          "Traidora",
+          "Una lady como tú",
+          "Qué va",
+          "Perro fiel",
+          "Usted",
+          "Duro y Suave",
+          "Duele el corazón",
+          "Por fin te encontré",
+          "Contando lunares",
+          "Enchochado de ti",
+          "El clavo",
+          "Lo siento",
+          "Sin pijama",
+          "Bella",
+          "Secreto",
+          "La isla del amor"
+        ],
+        selected: true
+      },
+      {
+        id: "canto-loco",
+        title: "El Canto del Loco",
+        songs: [
+          "Eres tonto",
+          "Besos",
+          "Zapatillas",
+          "La madre de José"
+        ],
+        selected: true
+      },
+      {
+        id: "dejate-querer",
+        title: "Popurrí Déjate Querer",
+        songs: [
+          "Déjate querer",
+          "Pokito a poko",
+          "Vente pa Madrid",
+          "Agustito"
+        ],
+        selected: true
+      },
+      {
+        id: "echo-de-menos",
+        title: "Popurrí Echo de Menos",
+        songs: [
+          "Echo de menos",
+          "La vida es un carnaval",
+          "Vengo venenoso"
+        ],
+        selected: true
+      },
+      {
+        id: "marc-anthony",
+        title: "Popurrí Marc Anthony",
+        songs: [
+          "Vivir mi vida",
+          "Valió la pena",
+          "Fruta fresca",
+          "Quiero casarme contigo"
+        ],
+        selected: true
+      },
+      {
+        id: "series",
+        title: "Popurrí Series de TV",
+        songs: [
+          "Verano azul",
+          "Cuéntame",
+          "Unos más uno son siete",
+          "Física o química",
+          "Phineas y Ferb",
+          "Oliver y Benji"
+        ],
+        selected: true
+      },
+      {
+        id: "carolina",
+        title: "Popurrí Carolina",
+        songs: [
+          "O Carolina",
+          "Princesas",
+          "Feo, fuerte y formal",
+          "Tanto la quería",
+          "Tenía tanto que darte"
+        ],
+        selected: true
+      },
+      {
+        id: "sirenas",
+        title: "Popurrí Sirenas",
+        songs: [
+          "Sirenas",
+          "La flaca",
+          "Mi gran noche",
+          "Chica cocodrilo",
+          "Sufre mamón"
+        ],
+        selected: true
+      },
+      {
+        id: "alaska",
+        title: "Popurrí Alaska",
+        songs: [
+          "I Will Survive",
+          "Resistiré",
+          "A quién le importa",
+          "Ni tú ni nadie"
+        ],
+        selected: true
+      },
+      {
+        id: "himnos",
+        title: "Himnos Populares",
+        songs: [
+          "No puedo vivir sin ti",
+          "Te he echado de menos",
+          "Caminando por la vida"
+        ],
+        selected: true
+      }
+    ];
+
+    let appRepertoire = JSON.parse(JSON.stringify(rawRepertoire));
+
+    // Inicializar aplicación al cargar el DOM
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      renderConfigurator();
+      renderInteractivePDF();
+      updateBadge();
+    });
+
+    // Renderizar panel de control izquierdo
+    function renderConfigurator() {
+      const container = document.getElementById('configurator-categories-list');
+      container.innerHTML = '';
+
+      appRepertoire.forEach((cat, catIndex) => {
+        const item = document.createElement('div');
+        item.className = 'bg-zinc-950 border border-zinc-800 rounded-lg p-2.5 space-y-1.5';
+        item.setAttribute('data-id', cat.id);
+
+        item.innerHTML = `
+          <div class="flex items-center justify-between">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" ${cat.selected ? 'checked' : ''} onchange="toggleCategory(${catIndex})" class="w-3.5 h-3.5 rounded border-zinc-700 bg-zinc-800 text-zinc-100 focus:ring-0">
+              <span class="text-[11px] font-bold text-zinc-200">${cat.title}</span>
+            </label>
+            <span class="text-[9px] text-zinc-500">${cat.songs.length} temas</span>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // Toggle para categorías completas
+    function toggleCategory(index) {
+      appRepertoire[index].selected = !appRepertoire[index].selected;
+      renderInteractivePDF();
+      updateBadge();
+    }
+
+    // Seleccionar o deseleccionar todas las canciones
+    function toggleAllSongs(status) {
+      appRepertoire.forEach(cat => cat.selected = status);
+      renderConfigurator();
+      renderInteractivePDF();
+      updateBadge();
+    }
+
+    // Actualizar campos de contacto en vivo
+    function updateLiveFields() {
+      const phone = document.getElementById('input-phone').value;
+      const social = document.getElementById('input-social').value;
+      const email = document.getElementById('input-email').value;
+      const location = document.getElementById('input-location').value;
+
+      // Actualizar todos los números de teléfono si hay múltiples elementos
+      const phoneElements = document.querySelectorAll('[id^="display-phone"]');
+      if (phoneElements.length > 0) {
+        phoneElements[0].innerText = phone;
+      }
+      
+      document.getElementById('display-social').innerText = social;
+      document.getElementById('display-location').innerText = location;
+      document.getElementById('display-footer-location').innerText = location.split(',')[0];
+    }
+
+    // Actualizar indicador de cantidad de canciones
+    function updateBadge() {
+      let count = 0;
+      appRepertoire.forEach(cat => {
+        if (cat.selected) count += cat.songs.length;
+      });
+      document.getElementById('total-songs-badge').innerText = `${count} temas`;
+    }
+
+    function renderInteractivePDF() {
+      const wrapper = document.getElementById('repertoire-column-wrapper');
+      wrapper.innerHTML = '';
+
+      const activeCategories = appRepertoire.filter(cat => cat.selected);
+
+      if (activeCategories.length === 0) {
+        wrapper.innerHTML = `
+          <div class="col-span-3 text-center py-10">
+            <p class="text-zinc-400 italic text-xs">Selecciona categorías en el menú izquierdo para visualizar el repertorio.</p>
+          </div>
+        `;
+        return;
+      }
+
+      // Estructuramos la rejilla con micro-diseño de estilo menú de conciertos
+      let htmlContent = '';
+      activeCategories.forEach(cat => {
+        htmlContent += `
+          <div class="avoid-break border border-zinc-800 p-2.5 rounded-md bg-zinc-900/30">
+            <h3 class="font-brand text-[9.5px] font-black tracking-wider uppercase text-white border-b border-white pb-1 mb-1.5 flex items-center gap-1.5">
+              <span class="w-1 h-1 bg-white rounded-full"></span>
+              ${cat.title}
+            </h3>
+            <ul class="space-y-0.5">
+              ${cat.songs.map(song => `
+                <li class="text-[8.5px] leading-tight text-zinc-200 font-medium flex items-start gap-1">
+                  <span class="text-zinc-500">•</span>
+                  <span>${song}</span>
+                </li>
+              `).join('')}
+            </ul>
+          </div>
+        `;
+      });
+
+      wrapper.innerHTML = htmlContent;
+    }
+
+    // Descarga directa del documento como PDF maquetado de 2 páginas exactas
+    function downloadPDF() {
+      const element = document.getElementById('pdf-to-print');
+      
+      // Cambio de texto del botón para feedback de usuario
+      const btn = document.querySelector('button[onclick="downloadPDF()"]');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i><span>Comprimiendo PDF...</span>`;
+      lucide.createIcons();
+
+      // Aplicamos clases temporales de impresión
+      element.classList.remove('gap-6');
+      element.classList.add('pdf-generating');
+
+      const opt = {
+        margin:       0,
+        filename:     'Repertorio_Toneleros.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { 
+          scale: 2.2, 
+          useCORS: true, 
+          letterRendering: true,
+          backgroundColor: '#000000'
+        },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['css', 'legacy'] }
+      };
+
+      // Ejecutar exportación
+      html2pdf().set(opt).from(element).save().then(() => {
+        // Restauramos la vista de pantalla
+        element.classList.add('gap-6');
+        element.classList.remove('pdf-generating');
+        btn.innerHTML = originalText;
+        lucide.createIcons();
+      }).catch(err => {
+        console.error("Error al exportar:", err);
+        element.classList.add('gap-6');
+        element.classList.remove('pdf-generating');
+        btn.innerHTML = originalText;
+        lucide.createIcons();
+      });
+    }
+  </script>
+</body>
+</html>
