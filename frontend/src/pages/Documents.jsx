@@ -142,7 +142,7 @@ const Documents = () => {
           <h1>Documentos</h1>
           <div className={styles.headerActions}>
             <button 
-              onClick={() => window.open('/presupuesto.html', '_blank')}
+              onClick={() => window.open('/crear-presupuesto.html', '_blank')}
               className={styles.createBudgetBtn}
             >
               📝 Crear Presupuesto
