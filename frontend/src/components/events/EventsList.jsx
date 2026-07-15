@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import EventDetailModal from './EventDetailModal';
 import { checkVacationOverlap } from '../../utils/vacationUtils';
+import { parseLocalDate } from '../../utils/dateUtils';
 
 export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [] }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -25,7 +26,7 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [] }) =
   }
 
   const groups = events.reduce((acc, ev) => {
-    const d = new Date(ev.fecha);
+    const d = parseLocalDate(ev.fecha);
     const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
     if (!acc[key]) acc[key] = [];
     acc[key].push(ev);
@@ -75,7 +76,7 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [] }) =
             {viewMode === 'cards' ? (
               <div className={styles.grid}>
                 {items.map(ev => {
-                  const eventDate = new Date(ev.fecha);
+                  const eventDate = parseLocalDate(ev.fecha);
                   const isNegotiation = ev.estado === 'NEGOCIACION';
                   const isArchived = ev.archivado;
                   const overlaps = checkVacationOverlap(ev.fecha, vacations);
@@ -107,7 +108,7 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [] }) =
                           <span className={`${styles.typeBadge} ${isNegotiation ? styles.negotiationBadge : ''}`}>
                             {isArchived ? '📁 Archivado' : (isNegotiation ? '⌛ Negociación' : ev.tipo)}
                           </span>
-                          <span className={styles.time}>{format(eventDate, 'HH:mm')}</span>
+                          <span className={styles.time}>{ev.hora_comienzo || '--:--'}</span>
                         </div>
                         
                         <h3 className={styles.direccion}>{ev.direccion}</h3>
@@ -141,7 +142,7 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [] }) =
                   </thead>
                   <tbody>
                     {items.map(ev => {
-                      const eventDate = new Date(ev.fecha);
+                      const eventDate = parseLocalDate(ev.fecha);
                       const pending = Number(ev.presupuesto) - Number(ev.senal);
                       const isNegotiation = ev.estado === 'NEGOCIACION';
                       const overlaps = checkVacationOverlap(ev.fecha, vacations);
@@ -166,7 +167,7 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [] }) =
                               )}
                             </div>
                           </td>
-                          <td className={styles.tableTime}>{format(eventDate, 'HH:mm')}</td>
+                          <td className={styles.tableTime}>{ev.hora_comienzo || '--:--'}</td>
                           <td>
                             <span className={`${styles.tableBadge} ${isNegotiation ? styles.negotiationBadgeSmall : ''}`}>
                               {isNegotiation ? 'Negociación' : ev.tipo}

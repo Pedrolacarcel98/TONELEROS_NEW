@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import styles from './EventCalendar.module.css';
+import { parseLocalDate } from '../../utils/dateUtils';
 
 const EventCalendar = ({ events, onEventClick }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -80,7 +81,7 @@ const EventCalendar = ({ events, onEventClick }) => {
 
   const getEventsForDay = (day, month, year) => {
     return events.filter(event => {
-      const eventDate = new Date(event.fecha);
+      const eventDate = parseLocalDate(event.fecha);
       return eventDate.getDate() === day && 
              eventDate.getMonth() === month && 
              eventDate.getFullYear() === year;
@@ -163,7 +164,7 @@ const EventCalendar = ({ events, onEventClick }) => {
                   onClick={() => onEventClick(event)}
                 >
                   <div className={styles.detailEventInfo}>
-                    <span className={styles.detailTime}>{formatTime(event.fecha)}</span>
+                    <span className={styles.detailTime}>{event.hora_comienzo || '--:--'}</span>
                     <span className={styles.detailDivider}>|</span>
                     <span className={styles.detailType}>{event.tipo}</span>
                   </div>
