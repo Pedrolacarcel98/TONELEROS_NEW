@@ -3,11 +3,12 @@ import styles from './EventDetailModal.module.css';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { eventsService } from '../../services/eventsService';
+import { parseLocalDate } from '../../utils/dateUtils';
 
 export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
   if (!event) return null;
 
-  const eventDate = new Date(event.fecha);
+  const eventDate = parseLocalDate(event.fecha);
   const isNegotiation = event.estado === 'NEGOCIACION';
 
   const handleEdit = () => {
@@ -89,8 +90,12 @@ export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
                 <span className={styles.value}>{format(eventDate, "PPPP", { locale: es })}</span>
               </div>
               <div className={styles.infoRow}>
-                <span className={styles.label}>Hora:</span>
-                <span className={styles.value}>{format(eventDate, "p")}</span>
+                <span className={styles.label}>Hora Comienzo:</span>
+                <span className={styles.value}>{event.hora_comienzo || '--:--'}</span>
+              </div>
+              <div className={styles.infoRow}>
+                <span className={styles.label}>Hora Llegada:</span>
+                <span className={styles.value}>{event.hora_llegada || '--:--'}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Dirección:</span>

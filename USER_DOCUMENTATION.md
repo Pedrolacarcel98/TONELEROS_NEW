@@ -1,54 +1,91 @@
-# Toneleros — Guía para el usuario
+# 📖 Manual de Usuario — Toneleros App
 
-Breve guía orientada a usuarios que desean ejecutar y usar la aplicación Toneleros (MVP).
+Guía de referencia rápida de las funcionalidades y módulos del sistema, organizada de mayor a menor relevancia para la gestión operativa.
 
-## Acceso rápido
+---
 
-- Frontend: http://localhost:3000
-- Backend API docs (Swagger): http://localhost:8000/docs
+## 1. 📅 Agenda de Eventos
+Módulo central para la planificación, registro y seguimiento de actuaciones, bolos y eventos.
 
-Credenciales de prueba (solo entorno de desarrollo):
+### Funciones Principales
+* **Visualización Dual:** Consulta de la agenda en formato de listado ordenado o vista de calendario mensual.
+* **Control de Estados:** Clasificación de eventos en *Negociación*, *Confirmado* o *Cancelado*.
+* **Historial de Actuaciones:** Alternancia rápida entre próximos eventos y actuaciones pasadas.
+* **Gestión de Fichas:** Creación, edición y borrado de eventos rellenando datos básicos.
+* **Cálculo de Saldos:** Cálculo automático del dinero restante a cobrar descontando la señal inicial.
 
-- Email: pedro@toneleros.com  | Contraseña: Pedro123?
-- Email: admin@toneleros.com  | Contraseña: Admin123?
+### Información del Evento
+* Tipo de evento (Boda, Fiesta Patronal, Privado, etc.).
+* Fecha, hora de comienzo y hora de llegada obligatoria.
+* Dirección exacta y contacto del organizador (nombre y teléfono).
+* Presupuesto total, señal abonada y estado de entrega de señal.
+* Observaciones especiales y estado de equipamiento de sonido.
 
-## Inicio rápido (Docker)
+---
 
-1. Abre una terminal en la carpeta del proyecto `TONELEROS_APP`.
-2. Ejecuta:
+## 2. 👥 Clientes Habituales
+Base de datos de representantes, ayuntamientos, comisionistas y clientes frecuentes.
 
-```bash
-docker-compose up -d --build
-```
+### Funciones Principales
+* **Directorio Telefónico:** Almacenamiento rápido de nombres, correos, teléfonos y direcciones.
+* **Vínculo Directo a Eventos:** Botón "Crear Evento" en cada ficha de cliente para cargar automáticamente sus datos de contacto en el formulario de la agenda.
+* **Mantenimiento:** Altas, modificaciones y eliminación de registros de clientes.
 
-3. Espera 20–60s mientras los contenedores inician. Comprueba el estado del backend:
+---
 
-```powershell
-Invoke-RestMethod http://localhost:8000/api/health
-```
+## 3. 💰 Finanzas
+Control de ingresos brutos, gastos de explotación y balance de rendimiento de la orquesta.
 
-Respuesta esperada: `{ "status": "OK", "app": "Toneleros API" }`.
+### Funciones Principales
+* **Métricas Clave:** Consulta instantánea de ingresos brutos generales, gastos acumulados y balance neto disponible.
+* **Registro de Gastos:** Entrada detallada de costes (combustible, mantenimiento de vehículos, marketing, dietas).
+* **Filtros Temporales:** Segmentación de cuentas por año y meses seleccionados.
+* **Gráfica de Evolución:** Análisis visual comparativo de ingresos frente a gastos mes a mes.
 
-4. Abre `http://localhost:3000` en el navegador y usa las credenciales de prueba.
+---
 
-## Problemas comunes
+## 4. 📄 Documentos y Presupuestos
+Gestión de almacenamiento de archivos y herramientas de edición de ofertas comerciales.
 
-- Error en login / Conexión con API: verifica que el backend responde (`/api/health`).
-- Si el frontend muestra peticiones a `http://backend:8000`, **cámbialo** por `http://localhost:8000` en la variable `VITE_API_URL` dentro de `docker-compose.yml` (esto ya está configurado en la versión de desarrollo).
-- Si la base de datos falla o crees que está corrupta:
+### Funciones Principales
+* **Creador de Presupuestos:** Generador interactivo de presupuestos elegantes en PDF para clientes. Permite:
+  * Modificar datos de cabecera y precio base.
+  * Añadir u omitir sonido e iluminación opcional.
+  * Seleccionar los bloques de canciones del repertorio que se adjuntarán al PDF.
+  * Descargar el presupuesto formateado a 4 páginas en un clic.
+* **Almacenamiento en la Nube:** Subida de contratos, facturas o especificaciones técnicas en formato digital.
+* **Función Compartir:** Copia directa del enlace de descarga al portapapeles o compartición mediante las aplicaciones del dispositivo (WhatsApp, e-mail).
 
-```bash
-docker-compose down
-rm backend/toneleros.db
-docker-compose up -d --build
-```
+---
 
-## Qué esperar
+## 5. 🏖️ Calendario de Vacaciones
+Coordinación de los periodos de descanso de los componentes del equipo.
 
-- Login funcional con JWT
-- Dashboard de bienvenida
-- Enlaces a la documentación de la API en `/docs`
+### Funciones Principales
+* **Registro de Fechas:** Solicitud e indicación de días libres individuales o periodos vacacionales completos.
+* **Control de Disponibilidad:** Visualización unificada del equipo (Luis, Pedro, Alfonso, Pipa) para evitar reservar actuaciones en días incompatibles.
 
-## Soporte y feedback
+---
 
-Para bugs, mejoras o preguntas, abre un issue en el repositorio privado o contacta con el equipo responsable.
+## 6. 🖼️ Multimedia
+Repositorio de contenido promocional para marketing de la banda.
+
+### Funciones Principales
+* **Organización de Archivos:** Clasificación rápida por pestañas de fotografías y vídeos cargados.
+* **Vista en Detalle:** Apertura de imágenes a pantalla completa sin salir del navegador.
+* **Distribución Rápida:** Descarga o envío inmediato del material publicitario a clientes interesados mediante mensajería integrada.
+
+---
+
+## 7. ⚙️ Automatizaciones n8n
+Panel técnico para integraciones externas y conectores API.
+
+### Funciones Principales
+* **Control de Webhooks:** Configuración de alertas y llamadas automáticas a plataformas externas (como n8n) cuando cambian los eventos de la agenda.
+* **Claves API:** Generación y eliminación de credenciales de conexión segura para que otras aplicaciones interactúen con el sistema de Toneleros.
+
+---
+
+## 💡 Utilidades y Seguridad
+* **Copia de Seguridad:** Botón de descarga rápida de la base de datos completa (`.db`) en el pie del Dashboard para almacenar respaldos de seguridad fuera del servidor.
+* **Compatibilidad Móvil:** Interfaz adaptiva diseñada para su consulta y actualización rápida desde smartphones en ruta.

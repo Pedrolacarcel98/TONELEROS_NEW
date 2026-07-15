@@ -6,6 +6,7 @@ import ExpensesList from '../components/finance/ExpensesList';
 import financeService from '../services/financeService';
 import eventsService from '../services/eventsService';
 import styles from './Finance.module.css';
+import { parseLocalDate } from '../utils/dateUtils';
 
 const Finance = () => {
   const [events, setEvents] = useState([]);
@@ -36,7 +37,7 @@ const Finance = () => {
 
   // Detect dynamically available years
   const availableYears = Array.from(new Set([
-    ...events.map(e => new Date(e.fecha).getFullYear().toString()),
+    ...events.map(e => parseLocalDate(e.fecha).getFullYear().toString()),
     ...expenses.map(e => new Date(e.created_at).getFullYear().toString())
   ])).sort((a, b) => b - a);
 
@@ -46,7 +47,7 @@ const Finance = () => {
 
   // Filter events and expenses based on current selections
   const filteredEvents = events.filter(e => {
-    const d = new Date(e.fecha);
+    const d = parseLocalDate(e.fecha);
     const yearMatch = selectedYear === 'Todos' || d.getFullYear().toString() === selectedYear;
     const monthMatch = selectedMonth === 'Todos' || d.getMonth() === Number(selectedMonth);
     return yearMatch && monthMatch;
@@ -65,8 +66,8 @@ const Finance = () => {
   const netBalance = grossIncome - totalExpensesVal;
 
   const now = new Date();
-  const pastEvents = filteredEvents.filter(e => new Date(e.fecha) <= now);
-  const futureEvents = filteredEvents.filter(e => new Date(e.fecha) > now);
+  const pastEvents = filteredEvents.filter(e => parseLocalDate(e.fecha) <= now);
+  const futureEvents = filteredEvents.filter(e => parseLocalDate(e.fecha) > now);
   const grossPast = pastEvents.reduce((sum, e) => sum + (e.presupuesto || 0), 0);
   const grossFuture = futureEvents.reduce((sum, e) => sum + (e.presupuesto || 0), 0);
 
@@ -75,7 +76,7 @@ const Finance = () => {
   
   const monthlyChartData = Array.from({ length: 12 }, (_, i) => {
     const monthEvents = events.filter(e => {
-      const d = new Date(e.fecha);
+      const d = parseLocalDate(e.fecha);
       return d.getFullYear().toString() === activeYearForChart && d.getMonth() === i;
     });
     const monthExpenses = expenses.filter(e => {
@@ -246,7 +247,7 @@ const Finance = () => {
                     <div className={styles.ledgerMainInfo}>
                       <h4 className={styles.ledgerConcept}>{e.tipo}</h4>
                       <p className={styles.ledgerMeta}>
-                        {new Date(e.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })} • {e.direccion}
+                        {parseLocalDate(e.fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })} • {e.direccion}
                       </p>
                     </div>
                     <div className={styles.ledgerAmountPositive}>
