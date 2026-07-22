@@ -8,9 +8,69 @@
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 800;
   margin-bottom: 20px;
+  display: none; /* Hide on mobile to save space */
+}
+
+@media (min-width: 769px) {
+  .title { display: block; }
+}
+
+/* Overview Cards */
+.overviewCards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 10px;
+}
+
+.overviewCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.overviewValue {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.overviewLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+}
+
+.addBtn {
+  background: var(--accent);
+  color: var(--bg-color);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+  margin-bottom: 20px;
+  border: none;
+  cursor: pointer;
+}
+
+.formSection {
+  animation: slideDown 0.3s ease-out;
+  margin-bottom: 30px;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .headerActions {
@@ -82,4 +142,18 @@
   color: var(--text-primary);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* FAB for Mobile */
+@media (max-width: 768px) {
+  .fabButton {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    padding: 16px 20px;
+    border-radius: 50px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.1);
+    margin-bottom: 0;
+  }
 }

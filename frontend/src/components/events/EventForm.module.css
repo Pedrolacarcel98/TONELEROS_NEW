@@ -12,21 +12,18 @@
 .title {
   font-size: 1.5rem;
   font-weight: 700;
-  margin: 0;
-}
-
-.toggleBtn {
-  background: var(--accent);
-  color: #000;
-  padding: 8px 16px;
-  font-size: 0.9rem;
-  font-weight: 700;
-  border-radius: 8px;
-}
-
-.toggleBtn.active {
-  background: var(--border);
   color: var(--text-primary);
+}
+
+.cancelBtnText {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.cancelBtnText:hover {
+  color: #fff;
 }
 
 .formWrapper {

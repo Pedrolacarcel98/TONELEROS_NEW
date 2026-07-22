@@ -18,6 +18,11 @@
   background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .title { display: block; }
 }
 
 .subtitle {
@@ -95,17 +100,22 @@
   box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
 }
 
-/* Rejilla Superior: Resumen + Gráfico */
 .dashboardTopGrid {
   display: grid;
   grid-template-columns: 1fr 1.2fr;
   gap: 24px;
   margin-bottom: 40px;
+  min-width: 0;
+}
+
+.dashboardTopGrid > * {
+  min-width: 0;
 }
 
 .metricsWrapper {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 /* Tarjeta del Gráfico */
@@ -128,6 +138,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .chartSubtitle {
@@ -144,6 +156,11 @@
   border-bottom: 1px solid #27272a;
   padding-bottom: 8px;
   gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chartWrapper::-webkit-scrollbar {
+  display: none;
 }
 
 /* Columna del Gráfico */
@@ -271,6 +288,11 @@
   grid-template-columns: 1fr 1.2fr;
   gap: 32px;
   align-items: flex-start;
+  min-width: 0;
+}
+
+.ledgerGrid > * {
+  min-width: 0;
 }
 
 .ledgerColumn {
@@ -368,6 +390,38 @@
 
 .expenseFormWrapper {
   margin-bottom: 24px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ledgerHeaderRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.desktopAddBtn {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.desktopAddBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.fabButton {
+  display: none; /* Hide on desktop */
 }
 
 .loadingText,
@@ -388,5 +442,39 @@
   .ledgerGrid {
     grid-template-columns: 1fr;
     gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .ledgerItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .ledgerHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .desktopAddBtn {
+    display: none;
+  }
+
+  .fabButton {
+    display: flex;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    padding: 16px 20px;
+    border-radius: 50px;
+    background: var(--accent);
+    color: #000;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.1);
+    font-weight: 700;
+    border: none;
   }
 }

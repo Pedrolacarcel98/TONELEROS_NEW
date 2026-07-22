@@ -542,6 +542,15 @@
     function downloadPDF() {
       const element = document.getElementById('pdf-to-print');
       
+      // Guardar posiciones de scroll
+      const scrollContainer = element.closest('section') || document.documentElement;
+      const originalScrollTop = scrollContainer.scrollTop;
+      const originalWindowScroll = window.scrollY;
+
+      // Forzar scroll al inicio para evitar cortes en html2canvas
+      scrollContainer.scrollTop = 0;
+      window.scrollTo(0, 0);
+      
       // Cambio de texto del botón para feedback de usuario
       const btn = document.querySelector('button[onclick="downloadPDF()"]');
       const originalText = btn.innerHTML;
@@ -560,7 +569,9 @@
           scale: 2.2, 
           useCORS: true, 
           letterRendering: true,
-          backgroundColor: '#000000'
+          backgroundColor: '#000000',
+          scrollY: 0,
+          scrollX: 0
         },
         jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
         pagebreak:    { mode: ['css', 'legacy'] }
@@ -571,12 +582,22 @@
         // Restauramos la vista de pantalla
         element.classList.add('gap-6');
         element.classList.remove('pdf-generating');
+        
+        // Restaurar posiciones de scroll
+        scrollContainer.scrollTop = originalScrollTop;
+        window.scrollTo(0, originalWindowScroll);
+        
         btn.innerHTML = originalText;
         lucide.createIcons();
       }).catch(err => {
         console.error("Error al exportar:", err);
         element.classList.add('gap-6');
         element.classList.remove('pdf-generating');
+        
+        // Restaurar posiciones de scroll
+        scrollContainer.scrollTop = originalScrollTop;
+        window.scrollTo(0, originalWindowScroll);
+        
         btn.innerHTML = originalText;
         lucide.createIcons();
       });

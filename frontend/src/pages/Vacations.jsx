@@ -19,6 +19,7 @@ export default function Vacations() {
     is_single_day: false,
     description: ''
   });
+  const [showForm, setShowForm] = useState(false);
 
   const members = ["Luis", "Pedro", "Alfonso", "Pipa"];
 
@@ -62,6 +63,7 @@ export default function Vacations() {
         is_single_day: false,
         description: ''
       });
+      setShowForm(false);
       fetchVacations();
     } catch (e) {
       console.error("Detalle del error:", e.response?.data || e.message);
@@ -93,12 +95,27 @@ export default function Vacations() {
       <main className={styles.main}>
         <div className={styles.header}>
           <h1>Vacaciones</h1>
-          <a href="#/" className={styles.backBtn}>← Volver al Dashboard</a>
+          
+          {/* Botón clásico / FAB para añadir vacaciones */}
+          <button 
+            className={`${styles.addBtn} ${styles.fabButton}`}
+            onClick={() => {
+              setShowForm(!showForm);
+              if (!showForm) {
+                setTimeout(() => {
+                  document.getElementById('vacationFormSection')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }
+            }}
+          >
+            {showForm ? '✕ Cerrar' : '➕ Añadir'}
+          </button>
         </div>
 
         <div className={styles.grid}>
           {/* Formulario */}
-          <section className={styles.card}>
+          {showForm && (
+            <section id="vacationFormSection" className={styles.card}>
             <h2>Añadir Vacaciones</h2>
             {errorMsg && <div className={styles.errorMessage}>{errorMsg}</div>}
             <form onSubmit={handleSubmit}>
@@ -184,40 +201,52 @@ export default function Vacations() {
               </button>
             </form>
           </section>
+          )}
 
-          {/* Listado */}
-          <section className={styles.card}>
+          {/* Listado Agrupado */}
+          <section className={`${styles.card} ${styles.listSection}`}>
+            <h2 style={{ color: '#fff', fontSize: '1.4rem', marginBottom: '20px' }}>Registros por Integrante</h2>
             {vacations.length === 0 ? (
               <div className={styles.emptyState}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
                 <p>No hay vacaciones registradas aún.</p>
               </div>
             ) : (
-              <ul className={styles.list}>
-                {vacations.map(v => (
-                  <li key={v.id} className={styles.listItem}>
-                    <div className={styles.vacationInfo}>
-                      <span className={styles.memberName}>{v.member_name}</span>
-                      <div className={styles.vacationDates}>
-                        <CalendarIcon />
-                        {v.is_single_day || v.start_date === v.end_date ? (
-                          <span>{formatDate(v.start_date)}</span>
-                        ) : (
-                          <span>{formatDate(v.start_date)} - {formatDate(v.end_date)}</span>
-                        )}
-                      </div>
-                      {v.description && (
-                        <div className={styles.vacationDescription}>
-                          {v.description}
-                        </div>
-                      )}
+              <div className={styles.memberGroups}>
+                {members.map(member => {
+                  const memberVacations = vacations.filter(v => v.member_name === member);
+                  if (memberVacations.length === 0) return null;
+                  return (
+                    <div key={member} className={styles.memberGroup}>
+                      <h3 className={styles.groupTitle}>👤 {member}</h3>
+                      <ul className={styles.list}>
+                        {memberVacations.map(v => (
+                          <li key={v.id} className={styles.listItem}>
+                            <div className={styles.vacationInfo}>
+                              <div className={styles.vacationDates}>
+                                <CalendarIcon />
+                                {v.is_single_day || v.start_date === v.end_date ? (
+                                  <span>{formatDate(v.start_date)}</span>
+                                ) : (
+                                  <span>{formatDate(v.start_date)} - {formatDate(v.end_date)}</span>
+                                )}
+                              </div>
+                              {v.description && (
+                                <div className={styles.vacationDescription}>
+                                  {v.description}
+                                </div>
+                              )}
+                            </div>
+                            <button onClick={() => handleDelete(v.id)} className={styles.deleteBtn}>
+                              🗑️
+                            </button>
+                          </li>
+                        ))}
+                      </ul>
                     </div>
-                    <button onClick={() => handleDelete(v.id)} className={styles.deleteBtn}>
-                      Eliminar
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                  );
+                })}
+              </div>
             )}
           </section>
         </div>

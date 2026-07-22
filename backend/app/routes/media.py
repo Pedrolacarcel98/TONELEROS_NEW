@@ -29,6 +29,12 @@ async def upload_media(
     media_type: str = Form(...),
     db: Session = Depends(get_db)
 ):
+    if media_type.upper() == "AUDIO":
+        valid_audio_extensions = {".mp3", ".wav", ".ogg", ".flac", ".aac", ".m4a", ".wma"}
+        file_ext = os.path.splitext(file.filename)[1].lower()
+        if not file.content_type.startswith("audio/") and file_ext not in valid_audio_extensions:
+            raise HTTPException(status_code=400, detail="Formato de audio no soportado o inválido")
+
     # Ensure directory
     os.makedirs(UPLOAD_DIR, exist_ok=True)
 

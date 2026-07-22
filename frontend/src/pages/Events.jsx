@@ -9,7 +9,7 @@ import { vacationsService } from '../services/vacationsService';
 import styles from './Events.module.css';
 
 export const Events = () => {
-  const [view, setView] = useState('list'); // 'list' o 'calendar'
+  const [view, setView] = useState('cards'); // 'cards', 'table', o 'calendar'
   const [showHistory, setShowHistory] = useState(false);
   const [events, setEvents] = useState([]);
   const [vacations, setVacations] = useState([]);
@@ -17,6 +17,7 @@ export const Events = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [editingEvent, setEditingEvent] = useState(null);
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [showForm, setShowForm] = useState(false);
 
   useEffect(() => {
     fetchEvents();
@@ -47,15 +48,18 @@ export const Events = () => {
   const handleCreated = () => {
     setRefreshKey(prev => prev + 1);
     setEditingEvent(null);
+    setShowForm(false);
   };
 
   const handleEdit = (event) => {
     setEditingEvent(event);
+    setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCancelEdit = () => {
     setEditingEvent(null);
+    setShowForm(false);
   };
 
   const handleEventClick = (event) => {
@@ -68,10 +72,31 @@ export const Events = () => {
 
   return (
     <div className={styles.page}>
-      <Header showBack={true} />
+      <Header showBack={true} title="Eventos" />
       <main className="container">
+
+        {/* Overview Cards */}
+        {!loading && (
+          <div className={styles.overviewCards}>
+            <div className={styles.overviewCard}>
+              <span className={styles.overviewValue}>{events.filter(e => new Date(e.fecha) >= new Date()).length}</span>
+              <span className={styles.overviewLabel}>Próximos</span>
+            </div>
+            <div className={styles.overviewCard}>
+              <span className={styles.overviewValue}>{events.filter(e => {
+                const eventDate = new Date(e.fecha);
+                const today = new Date();
+                const diffTime = Math.abs(eventDate - today);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                return diffDays <= 7 && eventDate >= today;
+              }).length}</span>
+              <span className={styles.overviewLabel}>Esta semana</span>
+            </div>
+          </div>
+        )}
+
         <header className={styles.header}>
-          <h1 className={styles.title}>Agenda de Eventos</h1>
+          <h1 className={styles.title}>Agenda</h1>
           
           <div className={styles.headerActions}>
             <div className={styles.filterTabs}>
@@ -91,24 +116,49 @@ export const Events = () => {
 
             <div className={styles.viewSwitcher}>
               <button 
-                className={`${styles.viewBtn} ${view === 'list' ? styles.activeView : ''}`}
-                onClick={() => setView('list')}
+                className={`${styles.viewBtn} ${view === 'cards' ? styles.activeView : ''}`}
+                onClick={() => setView('cards')}
               >
-                Lista
+                🎴 Tarjetas
+              </button>
+              <button 
+                className={`${styles.viewBtn} ${view === 'table' ? styles.activeView : ''}`}
+                onClick={() => setView('table')}
+              >
+                📋 Tabla
               </button>
               <button 
                 className={`${styles.viewBtn} ${view === 'calendar' ? styles.activeView : ''}`}
                 onClick={() => setView('calendar')}
               >
-                Calendario
+                📅 Calendario
               </button>
             </div>
           </div>
         </header>
 
-        {/* Solo mostramos el formulario si no estamos viendo el historial */}
+        {/* Botón Flotante para añadir evento */}
         {!showHistory && (
-          <section className={styles.formSection}>
+          <button 
+            className={`${styles.addBtn} ${styles.fabButton}`}
+            onClick={() => {
+              setEditingEvent(null);
+              setShowForm(!showForm);
+              if (!showForm) {
+                setTimeout(() => {
+                  document.getElementById('eventFormSection')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }
+            }}
+            title="Nuevo Evento"
+          >
+            {showForm ? '✕ Cerrar' : '➕ Nuevo'}
+          </button>
+        )}
+
+        {/* Solo mostramos el formulario si no estamos viendo el historial y se ha activado showForm */}
+        {!showHistory && showForm && (
+          <section id="eventFormSection" className={styles.formSection}>
             <EventForm 
               onCreated={handleCreated} 
               initialData={editingEvent}
@@ -122,17 +172,18 @@ export const Events = () => {
           <div style={{textAlign: 'center', padding: '2rem'}}>Cargando eventos...</div>
         ) : (
           <section className={styles.contentSection}>
-            {view === 'list' ? (
+            {view === 'calendar' ? (
+              <EventCalendar 
+                events={events} 
+                onEventClick={handleEventClick}
+              />
+            ) : (
               <EventsList 
                 events={events}
                 onEdit={handleEdit}
                 onRefresh={handleCreated}
                 vacations={vacations}
-              />
-            ) : (
-              <EventCalendar 
-                events={events} 
-                onEventClick={handleEventClick}
+                viewMode={view}
               />
             )}
           </section>

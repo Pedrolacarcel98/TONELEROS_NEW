@@ -7,6 +7,7 @@ import enum
 class MediaType(enum.Enum):
     PHOTO = "PHOTO"
     VIDEO = "VIDEO"
+    AUDIO = "AUDIO"
 
 
 class Media(Base):

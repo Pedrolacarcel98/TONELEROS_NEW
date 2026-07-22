@@ -73,16 +73,28 @@
 }
 
 /* Center Section (Symmetry) */
-.centerLogo {
+.centerSection {
   flex: 1;
   display: flex;
   justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.centerLogo {
   cursor: pointer;
 }
 
 .centerLogo .logoText {
   font-size: 1.1rem;
   opacity: 0.8;
+}
+
+.pageTitle {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  letter-spacing: 0.02em;
 }
 
 /* Right Section */
@@ -126,20 +138,21 @@
   }
   
   .backBtn {
-    padding: 6px 12px;
-    font-size: 0.85rem;
+    padding: 8px; /* Square button on mobile */
+    min-width: 40px;
+    justify-content: center;
   }
 
   .backText {
-    display: inline; /* Mantenemos el texto en móvil para mayor claridad */
-  }
-  
-  .centerLogo {
-    display: none;
+    display: none; /* Hide text, keep arrow for space */
   }
   
   .email {
     display: none;
+  }
+
+  .pageTitle {
+    font-size: 1rem;
   }
 }
 
@@ -151,12 +164,8 @@
   .logoIcon {
     font-size: 1.2rem;
   }
-
-  .backBtn {
-    padding: 5px 10px;
-  }
   
-  .backText {
-    font-size: 0.8rem;
+  .centerLogo {
+    display: none; /* Hide Toneleros text on very small screens if no title */
   }
 }

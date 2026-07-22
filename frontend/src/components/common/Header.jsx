@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Header.module.css';
 import { useAuth } from '../../hooks/useAuth';
 
-export const Header = ({ showBack = false }) => {
+export const Header = ({ showBack = false, title = null }) => {
   const { user, logout } = useAuth();
 
   const goToDashboard = () => {
@@ -32,12 +32,18 @@ export const Header = ({ showBack = false }) => {
             )}
           </div>
 
-          {/* Center: Logo (visible when showBack is true for symmetry) */}
-          {showBack && (
-            <div className={styles.centerLogo} onClick={goToDashboard}>
-              <span className={styles.logoText}>TONELEROS</span>
-            </div>
-          )}
+          {/* Center: Title or Logo (visible when showBack is true for symmetry) */}
+          <div className={styles.centerSection}>
+            {title ? (
+              <span className={styles.pageTitle}>{title}</span>
+            ) : (
+              showBack && (
+                <div className={styles.centerLogo} onClick={goToDashboard}>
+                  <span className={styles.logoText}>TONELEROS</span>
+                </div>
+              )
+            )}
+          </div>
 
           {/* Right: User actions */}
           <div className={styles.right}>

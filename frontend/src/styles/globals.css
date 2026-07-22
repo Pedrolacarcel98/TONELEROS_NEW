@@ -42,7 +42,7 @@ button {
   font-family: inherit;
   cursor: pointer;
   border: none;
-  padding: 10px 20px;
+  padding: 12px 20px; /* Incremented vertical padding for min 44px height */
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.2s ease;
@@ -50,6 +50,11 @@ button {
   align-items: center;
   justify-content: center;
   gap: 8px;
+  -webkit-tap-highlight-color: transparent; /* Remove default iOS tap highlight */
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.96); /* Tactile feedback on tap */
 }
 
 button:disabled {
@@ -86,7 +91,7 @@ input, textarea, select {
   padding: 12px 16px;
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px; /* 16px to prevent iOS auto-zoom */
   background: rgba(15, 23, 42, 0.6);
   color: var(--text-primary);
   transition: all 0.2s ease;

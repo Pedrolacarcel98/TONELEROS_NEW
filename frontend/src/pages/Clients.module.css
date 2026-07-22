@@ -12,10 +12,15 @@
 }
 
 .title {
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 800;
   color: var(--text-primary);
   margin: 0;
+  display: none; /* Hide on mobile since header has it, show on desktop */
+}
+
+@media (min-width: 769px) {
+  .title { display: block; }
 }
 
 .addBtn {
@@ -25,6 +30,39 @@
   border-radius: 12px;
   font-weight: 700;
   box-shadow: 0 4px 15px rgba(255, 255, 255, 0.1);
+}
+
+/* Overview Cards */
+.overviewCards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  margin-top: 24px;
+  margin-bottom: 10px;
+}
+
+.overviewCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.overviewValue {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.overviewLabel {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
 }
 
 .formSection {
@@ -130,4 +168,59 @@
   background: var(--card-bg);
   border-radius: 16px;
   border: 1px solid var(--border);
+}
+
+/* Responsive Table & FAB */
+@media (max-width: 768px) {
+  .header {
+    margin: 20px 0;
+  }
+  
+  .tableWrapper {
+    background: transparent;
+    border: none;
+  }
+
+  .table, .table tbody, .table tr, .table td {
+    display: block;
+    width: 100%;
+  }
+
+  .table thead {
+    display: none; /* Hide table headers */
+  }
+
+  .mobileCard {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    margin-bottom: 16px;
+    padding: 16px;
+  }
+
+  .table td {
+    padding: 8px 0;
+    border: none;
+  }
+
+  .clientAddress {
+    white-space: normal; /* Allow wrap on mobile */
+  }
+
+  .actions {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    justify-content: space-between;
+  }
+
+  .fabButton {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    padding: 16px 20px;
+    border-radius: 50px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.1);
+  }
 }
