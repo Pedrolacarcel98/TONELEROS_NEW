@@ -6,9 +6,8 @@ import EventDetailModal from './EventDetailModal';
 import { checkVacationOverlap } from '../../utils/vacationUtils';
 import { parseLocalDate } from '../../utils/dateUtils';
 
-export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [] }) => {
+export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [], viewMode = 'cards' }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
-  const [viewMode, setViewMode] = useState('cards'); // 'cards' or 'table'
   const [openTooltipId, setOpenTooltipId] = useState(null);
 
   const handleEditClick = (event) => {
@@ -37,25 +36,6 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [] }) =
 
   return (
     <div className={styles.container}>
-      <div className={styles.viewSwitcher}>
-        <div className={styles.switcherLabel}>Vista:</div>
-        <div className={styles.switcherButtons}>
-          <button 
-            className={`${styles.switchBtn} ${viewMode === 'cards' ? styles.activeSwitch : ''}`}
-            onClick={() => setViewMode('cards')}
-            title="Vista de tarjetas"
-          >
-            🎴 Tarjetas
-          </button>
-          <button 
-            className={`${styles.switchBtn} ${viewMode === 'table' ? styles.activeSwitch : ''}`}
-            onClick={() => setViewMode('table')}
-            title="Vista de tabla"
-          >
-            📋 Tabla
-          </button>
-        </div>
-      </div>
 
       {groupKeys.map(key => {
         const [year, month] = key.split('-');

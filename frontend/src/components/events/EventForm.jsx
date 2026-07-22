@@ -4,7 +4,6 @@ import { eventsService } from '../../services/eventsService';
 import { checkVacationOverlap } from '../../utils/vacationUtils';
 
 export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) => {
-  const [visible, setVisible] = useState(false);
   const [form, setForm] = useState({
     tipo: '',
     fecha: '',
@@ -37,7 +36,6 @@ export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) 
         tlf: data.tlf || '',
         direccion: data.direccion || ''
       }));
-      setVisible(true);
       sessionStorage.removeItem('prefill_event'); // Clean up
     }
 
@@ -54,7 +52,6 @@ export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) 
         hora_comienzo: initialData.hora_comienzo || '',
         hora_llegada: initialData.hora_llegada || '',
       });
-      setVisible(true);
     }
   }, [initialData]);
 
@@ -93,11 +90,10 @@ export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) 
     setForm(newForm);
   };
 
-  const handleToggle = () => {
-    if (visible && isEditing && onCancel) {
+  const handleCancel = () => {
+    if (onCancel) {
       onCancel();
     }
-    setVisible(!visible);
   };
 
   const handleSubmit = async (e) => {
@@ -135,7 +131,6 @@ export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) 
       setForm({ tipo: '', fecha: '', hora_comienzo: '', hora_llegada: '', direccion: '', pContacto: '', tlf: '', presupuesto: '', senal: '', senal_repartida: false, cobrador: '', observaciones: '', equipo: false, estado: 'NEGOCIACION' });
       if (onCreated) onCreated();
       if (onCancel) onCancel();
-      setVisible(false);
     } catch (err) {
       setError(err.response?.data?.detail || err.message || 'Error guardando evento');
     } finally {
@@ -147,19 +142,16 @@ export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) 
     <div className={styles.container}>
       <header className={styles.header}>
         <h2 className={styles.title}>{isEditing ? 'Editar Evento' : 'Nuevo Evento'}</h2>
-        <button 
-          type="button" 
-          className={`${styles.toggleBtn} ${visible ? styles.active : ''}`} 
-          onClick={handleToggle}
-        >
-          {visible ? 'Cancelar' : '+ Añadir Evento'}
-        </button>
+        {isEditing && (
+          <button type="button" className={styles.cancelBtnText} onClick={handleCancel}>
+            Cancelar
+          </button>
+        )}
       </header>
 
-      {visible && (
-        <div className={styles.formWrapper}>
-          <form className={styles.form} onSubmit={handleSubmit}>
-            <div className={styles.grid}>
+      <div className={styles.formWrapper}>
+        <form className={styles.form} onSubmit={handleSubmit}>
+          <div className={styles.grid}>
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Tipo de Evento</label>
                 <select 
@@ -351,7 +343,6 @@ export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) 
             </div>
           </form>
         </div>
-      )}
     </div>
   );
 };

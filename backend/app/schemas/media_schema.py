@@ -7,6 +7,7 @@ from enum import Enum
 class MediaType(str, Enum):
     PHOTO = "PHOTO"
     VIDEO = "VIDEO"
+    AUDIO = "AUDIO"
 
 
 class MediaResponse(BaseModel):

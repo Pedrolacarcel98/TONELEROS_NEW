@@ -130,6 +130,21 @@
   transform: scale(1.05);
 }
 
+.audioPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  color: var(--accent);
+}
+
+.itemCard:hover .audioPlaceholder svg {
+  transform: scale(1.1);
+  transition: transform 0.3s;
+}
+
 .itemInfo {
   padding: 16px;
   display: flex;
@@ -232,6 +247,24 @@
   object-fit: contain;
   border-radius: 8px;
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+}
+
+.audioModalContainer {
+  background: var(--card-bg);
+  padding: 40px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+  min-width: 300px;
+}
+
+.audioPlayer {
+  width: 100%;
+  margin-top: 10px;
+  outline: none;
 }
 
 .closeBtn {

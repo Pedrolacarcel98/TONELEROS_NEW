@@ -38,8 +38,8 @@
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: 1fr 2fr;
+  display: flex;
+  flex-direction: column;
   gap: 30px;
 }
 
@@ -245,8 +245,48 @@
   color: #475569;
 }
 
+.memberGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.memberGroup {
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.groupTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent);
+  margin: 0 0 16px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding-bottom: 12px;
+}
+
+.addBtn {
+  background: var(--accent);
+  color: var(--bg-color);
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+}
+
 @media (max-width: 768px) {
-  .grid {
-    grid-template-columns: 1fr;
+  .fabButton {
+    display: flex;
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 100;
+    padding: 16px 20px;
+    border-radius: 50px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.1);
+    margin-bottom: 0;
   }
 }

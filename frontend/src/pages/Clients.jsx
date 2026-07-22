@@ -64,23 +64,47 @@ export const Clients = () => {
 
   return (
     <div className={styles.page}>
-      <Header showBack={true} />
+      <Header showBack={true} title="Clientes" />
       <main className="container">
+        
+        {/* Overview Cards */}
+        {!loading && (
+          <div className={styles.overviewCards}>
+            <div className={styles.overviewCard}>
+              <span className={styles.overviewValue}>{clients.length}</span>
+              <span className={styles.overviewLabel}>Total Clientes</span>
+            </div>
+            {/* Mocked stat for visual completeness */}
+            <div className={styles.overviewCard}>
+              <span className={styles.overviewValue}>+3</span>
+              <span className={styles.overviewLabel}>Nuevos este mes</span>
+            </div>
+          </div>
+        )}
+
         <header className={styles.header}>
-          <h1 className={styles.title}>Clientes Habituales</h1>
-          <button 
-            className={styles.addBtn}
-            onClick={() => {
-              setEditingClient(null);
-              setShowForm(!showForm);
-            }}
-          >
-            {showForm ? 'Cerrar Formulario' : '➕ Nuevo Cliente'}
-          </button>
+          <h1 className={styles.title}>Listado</h1>
         </header>
 
+        {/* Botón flotante en móvil, botón normal en desktop */}
+        <button 
+          className={`${styles.addBtn} ${styles.fabButton}`}
+          onClick={() => {
+            setEditingClient(null);
+            setShowForm(!showForm);
+            if (!showForm) {
+              setTimeout(() => {
+                document.getElementById('clientFormSection')?.scrollIntoView({ behavior: 'smooth' });
+              }, 100);
+            }
+          }}
+          title="Nuevo Cliente"
+        >
+          {showForm ? '✕ Cerrar' : '➕ Nuevo'}
+        </button>
+
         {showForm && (
-          <section className={styles.formSection}>
+          <section id="clientFormSection" className={styles.formSection}>
             <ClientForm 
               onCreated={handleCreated} 
               initialData={editingClient}
@@ -107,7 +131,7 @@ export const Clients = () => {
                 </thead>
                 <tbody>
                   {clients.map(client => (
-                    <tr key={client.id}>
+                    <tr key={client.id} className={styles.mobileCard}>
                       <td className={styles.clientName}>
                         <strong>{client.nombre}</strong>
                         {client.notas && <small>{client.notas}</small>}

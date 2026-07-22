@@ -14,6 +14,7 @@ const Finance = () => {
   const [loading, setLoading] = useState(true);
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear().toString());
   const [selectedMonth, setSelectedMonth] = useState('Todos');
+  const [showExpenseForm, setShowExpenseForm] = useState(false);
 
   const fetchFinanceData = async () => {
     setLoading(true);
@@ -99,7 +100,7 @@ const Finance = () => {
 
   return (
     <div className={styles.page}>
-      <Header showBack={true} />
+      <Header showBack={true} title="Finanzas" />
       <main className="container">
         
         {/* Encabezado */}
@@ -108,6 +109,22 @@ const Finance = () => {
             <h1 className={styles.title}>Panel de Finanzas</h1>
             <p className={styles.subtitle}>Analiza las ganancias del grupo, filtra periodos y gestiona gastos</p>
           </div>
+
+          {/* Botón flotante para móvil */}
+          <button 
+            className={`${styles.addBtn} ${styles.fabButton}`}
+            onClick={() => {
+              setShowExpenseForm(!showExpenseForm);
+              if (!showExpenseForm) {
+                setTimeout(() => {
+                  document.getElementById('expenseFormSection')?.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+              }
+            }}
+            title="Nuevo Gasto"
+          >
+            {showExpenseForm ? '✕ Cerrar' : '➕ Gasto'}
+          </button>
 
           {/* Selector de Año */}
           <div className={styles.yearSelectorWrapper}>
@@ -259,19 +276,29 @@ const Finance = () => {
             )}
           </section>
 
-          {/* Columna Derecha: Gastos */}
+            {/* Columna Derecha: Gastos */}
           <section className={styles.ledgerColumn}>
             <div className={styles.ledgerHeader}>
               <h2 className={styles.ledgerTitle}>
                 <span className={styles.expenseIndicatorDot}></span>
                 Gastos (Salidas)
               </h2>
-              <span className={styles.ledgerBadge}>{filteredExpenses.length} items</span>
+              <div className={styles.ledgerHeaderRight}>
+                <span className={styles.ledgerBadge}>{filteredExpenses.length} items</span>
+                <button 
+                  className={styles.desktopAddBtn}
+                  onClick={() => setShowExpenseForm(!showExpenseForm)}
+                >
+                  {showExpenseForm ? '✕ Cancelar' : '➕ Gasto'}
+                </button>
+              </div>
             </div>
 
-            <div className={styles.expenseFormWrapper}>
-              <ExpenseForm onCreated={fetchFinanceData} />
-            </div>
+            {showExpenseForm && (
+              <div id="expenseFormSection" className={styles.expenseFormWrapper}>
+                <ExpenseForm onCreated={() => { fetchFinanceData(); setShowExpenseForm(false); }} />
+              </div>
+            )}
 
             <ExpensesList 
               items={filteredExpenses} 

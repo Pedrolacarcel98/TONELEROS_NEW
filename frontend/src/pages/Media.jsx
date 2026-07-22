@@ -4,7 +4,7 @@ import mediaService from '../services/mediaService';
 import styles from './Media.module.css';
 
 const Media = () => {
-  const [activeTab, setActiveTab] = useState('PHOTO'); // 'PHOTO' or 'VIDEO'
+  const [activeTab, setActiveTab] = useState('PHOTO'); // 'PHOTO', 'VIDEO', 'AUDIO'
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
@@ -125,6 +125,12 @@ const Media = () => {
               >
                 Videos
               </button>
+              <button 
+                className={`${styles.tab} ${activeTab === 'AUDIO' ? styles.activeTab : ''}`}
+                onClick={() => setActiveTab('AUDIO')}
+              >
+                Audios / Maquetas
+              </button>
             </div>
             
             <div className={styles.uploadSection}>
@@ -133,14 +139,14 @@ const Media = () => {
                 ref={fileInputRef} 
                 onChange={handleUpload} 
                 style={{ display: 'none' }} 
-                accept={activeTab === 'PHOTO' ? "image/*" : "video/*"}
+                accept={activeTab === 'PHOTO' ? "image/*" : activeTab === 'VIDEO' ? "video/*" : "audio/*"}
               />
               <button 
                 className={styles.uploadBtn} 
                 onClick={() => fileInputRef.current.click()}
                 disabled={uploading}
               >
-                {uploading ? 'Subiendo...' : `Subir ${activeTab === 'PHOTO' ? 'Foto' : 'Video'}`}
+                {uploading ? 'Subiendo...' : `Subir ${activeTab === 'PHOTO' ? 'Foto' : activeTab === 'VIDEO' ? 'Video' : 'Audio'}`}
               </button>
             </div>
           </div>
@@ -150,7 +156,7 @@ const Media = () => {
           <div className={styles.loading}>Cargando galería...</div>
         ) : items.length === 0 ? (
           <div className={styles.empty}>
-            <p>No hay {activeTab === 'PHOTO' ? 'fotos' : 'videos'} en la galería.</p>
+            <p>No hay {activeTab === 'PHOTO' ? 'fotos' : activeTab === 'VIDEO' ? 'videos' : 'audios'} en la galería.</p>
           </div>
         ) : (
           <div className={styles.grid}>
@@ -159,8 +165,16 @@ const Media = () => {
                 <div className={styles.preview} onClick={() => openFull(item)}>
                   {activeTab === 'PHOTO' ? (
                     <img src={mediaService.getViewUrl(item.id)} alt={item.original_name} />
-                  ) : (
+                  ) : activeTab === 'VIDEO' ? (
                     <video src={mediaService.getViewUrl(item.id)} />
+                  ) : (
+                    <div className={styles.audioPlaceholder}>
+                      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M9 18V5l12-2v13"></path>
+                        <circle cx="6" cy="18" r="3"></circle>
+                        <circle cx="18" cy="16" r="3"></circle>
+                      </svg>
+                    </div>
                   )}
                   <div className={styles.overlay}>
                     <span>Ver pantalla completa</span>
@@ -215,8 +229,17 @@ const Media = () => {
             <button className={styles.closeBtn} onClick={closeFull}>×</button>
             {selectedMedia.media_type === 'PHOTO' ? (
               <img src={mediaService.getViewUrl(selectedMedia.id)} alt={selectedMedia.original_name} />
-            ) : (
+            ) : selectedMedia.media_type === 'VIDEO' ? (
               <video src={mediaService.getViewUrl(selectedMedia.id)} controls autoPlay />
+            ) : (
+              <div className={styles.audioModalContainer}>
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{marginBottom: '20px'}}>
+                  <path d="M9 18V5l12-2v13"></path>
+                  <circle cx="6" cy="18" r="3"></circle>
+                  <circle cx="18" cy="16" r="3"></circle>
+                </svg>
+                <audio src={mediaService.getViewUrl(selectedMedia.id)} controls autoPlay className={styles.audioPlayer} />
+              </div>
             )}
             <div className={styles.modalFooter}>
               <h3>{selectedMedia.original_name}</h3>
