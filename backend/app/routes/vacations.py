@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from typing import List
+from sqlalchemy import extract
+from typing import List, Dict, Any
+import datetime
 from app.db.database import get_db
 from app.models.vacation import Vacation
 from app.schemas.vacation_schema import VacationCreate, VacationResponse
@@ -9,7 +11,28 @@ router = APIRouter(prefix="/api/vacations", tags=["vacations"])
 
 @router.get("/", response_model=List[VacationResponse])
 def list_vacations(db: Session = Depends(get_db)):
-    return db.query(Vacation).order_by(Vacation.start_date.asc()).all()
+    today = datetime.date.today()
+    # Filtramos para ocultar las pasadas (end_date < hoy) pero las conservamos para el conteo
+    return db.query(Vacation).filter(Vacation.end_date >= today).order_by(Vacation.start_date.asc()).all()
+
+@router.get("/summary", response_model=List[Dict[str, Any]])
+def get_vacation_summary(year: int = None, db: Session = Depends(get_db)):
+    if not year:
+        year = datetime.date.today().year
+    
+    vacations = db.query(Vacation).filter(
+        extract('year', Vacation.start_date) == year
+    ).all()
+    
+    summary = {}
+    for v in vacations:
+        days = (v.end_date - v.start_date).days + 1
+        if v.member_name in summary:
+            summary[v.member_name] += days
+        else:
+            summary[v.member_name] = days
+            
+    return [{"member_name": k, "total_days": v} for k, v in summary.items()]
 
 @router.post("/", response_model=VacationResponse, status_code=status.HTTP_201_CREATED)
 def create_vacation(payload: VacationCreate, db: Session = Depends(get_db)):

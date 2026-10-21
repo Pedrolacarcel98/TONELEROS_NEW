@@ -1,18 +1,19 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional
 
+EMAIL_REGEX = r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$"
+
 class LoginRequest(BaseModel):
-    email: str
-    password: str
+    email: str = Field(..., pattern=EMAIL_REGEX, description="User email address")
+    password: str = Field(..., min_length=1)
 
 class UserResponse(BaseModel):
     id: int
-    email: str
+    email: str = Field(..., pattern=EMAIL_REGEX)
     
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class TokenResponse(BaseModel):
     access_token: str
-    token_type: str
+    token_type: str = "bearer"
     user: UserResponse
