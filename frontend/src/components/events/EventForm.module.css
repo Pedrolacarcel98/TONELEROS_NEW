@@ -67,6 +67,46 @@
   resize: vertical;
 }
 
+.soundToggleGroup {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.soundToggleBtn {
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid var(--border, rgba(255, 255, 255, 0.1));
+  color: var(--text-secondary, #94a3b8);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.soundToggleBtn:hover {
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.soundToggleOurs {
+  background: rgba(56, 189, 248, 0.18);
+  border-color: #38bdf8;
+  color: #38bdf8;
+  box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.25);
+}
+
+.soundToggleClient {
+  background: rgba(148, 163, 184, 0.16);
+  border-color: #94a3b8;
+  color: #f8fafc;
+}
+
 .inputGroupCheckbox {
   display: flex;
   align-items: center;
@@ -116,6 +156,22 @@
 .submitBtn:hover {
   background: #fff;
   transform: translateY(-2px);
+}
+
+.lowBudgetWarning {
+  font-size: 0.78rem;
+  color: #fbbf24;
+  font-weight: 600;
+  margin-top: 5px;
+  display: block;
+}
+
+.zeroBudgetError {
+  font-size: 0.78rem;
+  color: #f87171;
+  font-weight: 700;
+  margin-top: 5px;
+  display: block;
 }
 
 @media (max-width: 640px) {

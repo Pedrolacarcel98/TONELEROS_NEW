@@ -10,6 +10,11 @@ falta subir cambios a prod de todo esto
 
 cambiar sobre todo n8n. importar de dev a prod
 
- pabloantoniovazquezdelestad@gmail.com, luisfelizon@gmail.com, bidifon21@gmail.com
+ 
 
-funciona TODO en dev PERFECTAMENTE
+
+funciona TODO en dev PERFECTAMENTEç
+
+
+
+sudo docker cp 2ec8ad69228abba912755beec237946e158efca47f91bc49364858d6c35def87:/data/toneleros.db ./toneleros_backup.db

@@ -48,6 +48,7 @@ export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) 
         senal: initialData.senal?.toString() || '',
         senal_repartida: initialData.senal_repartida || false,
         cobrador: initialData.cobrador || '',
+        equipo: Boolean(initialData.equipo),
         fecha: initialData.fecha ? initialData.fecha.slice(0, 10) : '',
         hora_comienzo: initialData.hora_comienzo || '',
         hora_llegada: initialData.hora_llegada || '',
@@ -99,6 +100,21 @@ export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validación estricta: El presupuesto nunca puede ser 0 €
+    const pptoNum = parseInt(form.presupuesto, 10);
+    if (!form.presupuesto || isNaN(pptoNum) || pptoNum <= 0) {
+      alert("🚫 El presupuesto nunca puede ser 0 €. Debes ingresar un número superior.");
+      return;
+    }
+
+    // Aviso jocoso si baja de 400 €
+    if (pptoNum < 400) {
+      const msgBajo = `🎸 ¡Ojo con ese caché! (${pptoNum} €)\n\nTe estás viniendo muy abajo con el presupuesto... ¿De verdad vamos a tocar casi por amor al arte? 😉💸\n\n¿Seguro que quieres ingresar este bolo por tan poco?`;
+      if (!window.confirm(msgBajo)) {
+        return;
+      }
+    }
+
     // Verificamos vacaciones si hay fecha
     if (form.fecha) {
       const overlaps = checkVacationOverlap(form.fecha, vacations);
@@ -239,15 +255,28 @@ export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) 
               </div>
 
               <div className={styles.inputGroup}>
-                <label className={styles.label}>Presupuesto (€)</label>
+                <label className={styles.label}>Presupuesto (€) *</label>
                 <input 
                   className={styles.input}
                   name="presupuesto" 
                   type="number"
+                  min="1"
+                  step="1"
                   value={form.presupuesto} 
                   onChange={handleChange} 
-                  placeholder="0.00"
+                  placeholder="Ej: 750"
+                  required
                 />
+                {Number(form.presupuesto) > 0 && Number(form.presupuesto) < 400 && (
+                  <span className={styles.lowBudgetWarning}>
+                    ⚠️ Menos de 400 €: ¡te estás bajando mucho de caché! 😉
+                  </span>
+                )}
+                {form.presupuesto !== '' && Number(form.presupuesto) <= 0 && (
+                  <span className={styles.zeroBudgetError}>
+                    🚫 El presupuesto no puede ser 0 € (debe ser mayor).
+                  </span>
+                )}
               </div>
 
               <div className={styles.inputGroup}>
@@ -310,16 +339,24 @@ export const EventForm = ({ onCreated, initialData, onCancel, vacations = [] }) 
                 </select>
               </div>
 
-              <div className={styles.inputGroupCheckbox}>
-                <label className={styles.checkboxLabel}>
-                  <input 
-                    name="equipo" 
-                    type="checkbox" 
-                    checked={form.equipo} 
-                    onChange={handleChange} 
-                  /> 
-                  <span>Equipo incluido</span>
-                </label>
+              <div className={styles.inputGroup}>
+                <label className={styles.label}>Equipo de Sonido</label>
+                <div className={styles.soundToggleGroup}>
+                  <button
+                    type="button"
+                    className={`${styles.soundToggleBtn} ${form.equipo ? styles.soundToggleOurs : ''}`}
+                    onClick={() => setForm(prev => ({ ...prev, equipo: true }))}
+                  >
+                    🔊 Nosotros
+                  </button>
+                  <button
+                    type="button"
+                    className={`${styles.soundToggleBtn} ${!form.equipo ? styles.soundToggleClient : ''}`}
+                    onClick={() => setForm(prev => ({ ...prev, equipo: false }))}
+                  >
+                    🏠 Cliente
+                  </button>
+                </div>
               </div>
 
               <div className={`${styles.inputGroup} ${styles.fullWidth}`}>

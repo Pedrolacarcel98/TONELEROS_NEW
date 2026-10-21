@@ -9,6 +9,18 @@ export default defineConfig({
     strictPort: false,
     watch: {
       usePolling: true,
-    }
+    },
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ['react', 'react-dom'],
+          network: ['axios'],
+          dates: ['date-fns'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 600,
   },
 })

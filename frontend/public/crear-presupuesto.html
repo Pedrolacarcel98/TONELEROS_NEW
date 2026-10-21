@@ -177,16 +177,21 @@
           </div>
         </div>
 
-        <div class="flex items-center justify-between p-1 pt-1.5">
-          <label for="checkbox-sound" class="text-xs md:text-sm font-semibold uppercase tracking-wider text-zinc-400 cursor-pointer select-none">¿Lleva equipo de sonido? (+150€)</label>
-          <input type="checkbox" id="checkbox-sound" checked onchange="updateLiveFields()" class="w-5 h-5 rounded border-zinc-700 bg-zinc-800 text-white focus:ring-0 cursor-pointer">
+        <div class="space-y-3 pt-1 border-t border-zinc-800/80">
+          <div class="flex items-center justify-between p-1 pt-1.5">
+            <label for="checkbox-sound" class="text-xs md:text-sm font-semibold uppercase tracking-wider text-zinc-400 cursor-pointer select-none">¿Lleva equipo de sonido?</label>
+            <input type="checkbox" id="checkbox-sound" checked onchange="updateLiveFields()" class="w-5 h-5 rounded border-zinc-700 bg-zinc-800 text-white focus:ring-0 cursor-pointer">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">Precio Equipo de Sonido (€)</label>
+            <input type="number" id="input-price-sound" value="150" oninput="updateLiveFields()" class="w-full bg-zinc-950 border border-zinc-800 rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-zinc-500 transition-opacity">
+          </div>
         </div>
       </div>
 
       <!-- Elementos ocultos para mantener la compatibilidad del JS -->
       <div class="hidden">
         <input type="text" id="input-concept" value="Actuación en directo">
-        <input type="number" id="input-price-sound" value="150">
         <input type="text" id="input-phone" value="+34 636 98 24 36 / +34 671 01 16 32">
         <input type="text" id="input-social" value="@toneleros">
         <div id="configurator-categories-list"></div>
@@ -577,8 +582,18 @@
       // Lógica de cálculo del presupuesto
       const concept = document.getElementById('input-concept').value;
       const basePrice = parseFloat(document.getElementById('input-price-base').value) || 0;
-      const soundPriceVal = parseFloat(document.getElementById('input-price-sound').value) || 0;
+      const soundPriceInput = document.getElementById('input-price-sound');
+      const soundPriceVal = parseFloat(soundPriceInput.value) || 0;
       const soundChecked = document.getElementById('checkbox-sound').checked;
+
+      // Estado activo/inactivo del input de precio según el checkbox
+      if (soundChecked) {
+        soundPriceInput.disabled = false;
+        soundPriceInput.classList.remove('opacity-40', 'cursor-not-allowed');
+      } else {
+        soundPriceInput.disabled = true;
+        soundPriceInput.classList.add('opacity-40', 'cursor-not-allowed');
+      }
 
       // Lógica de pases y duración
       const pases = document.getElementById('input-pases').value || '2';

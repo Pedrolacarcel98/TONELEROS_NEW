@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from './EventDetailModal.module.css';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import { eventsService } from '../../services/eventsService';
 import { parseLocalDate } from '../../utils/dateUtils';
+import { getEventPriceGradient } from '../../utils/pricingUtils';
 
 export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
   if (!event) return null;
 
   const eventDate = parseLocalDate(event.fecha);
   const isNegotiation = event.estado === 'NEGOCIACION';
+  const priceGrad = getEventPriceGradient(event.presupuesto, event.equipo);
 
   const handleEdit = () => {
     onEdit(event);
@@ -37,8 +39,6 @@ export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
     if (!window.confirm('¿Confirmar este evento? Pasará de Negociación a Confirmado.')) return;
     try {
       const updatedData = { ...event, estado: 'CONFIRMADO' };
-      // Remove fields not in EventCreate schema if necessary, 
-      // but EventCreate is same as EventBase except id/archivado
       delete updatedData.id;
       delete updatedData.archivado;
       delete updatedData.created_at;
@@ -72,7 +72,7 @@ export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
             </span>
             <h2 className={styles.title}>{event.direccion || 'Sin dirección'}</h2>
           </div>
-          <button className={styles.closeBtn} onClick={onClose}>×</button>
+          <button className={styles.closeBtn} onClick={onClose} title="Cerrar modal">×</button>
         </header>
 
         <div className={styles.content}>
@@ -102,8 +102,8 @@ export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
                 <span className={styles.value}>{event.direccion}</span>
               </div>
               <div className={styles.infoRow}>
-                <span className={styles.label}>Equipo:</span>
-                <span className={styles.value}>{event.equipo ? '✅ Incluido' : '❌ No incluido'}</span>
+                <span className={styles.label}>Equipo de Sonido:</span>
+                <span className={styles.value}>{event.equipo ? '🔊 Nosotros (Media 750 €)' : '🏠 Cliente (Media 600 €)'}</span>
               </div>
             </div>
 
@@ -123,7 +123,16 @@ export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
               <h3 className={styles.sectionTitle}>Finanzas</h3>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Presupuesto Total:</span>
-                <span className={`${styles.value} ${styles.highlight}`}>{Number(event.presupuesto).toLocaleString()} €</span>
+                <span 
+                  className={`${styles.value} ${styles.highlight}`}
+                  style={{
+                    background: priceGrad.background,
+                    color: priceGrad.color,
+                    border: `1px solid ${priceGrad.border}`,
+                  }}
+                >
+                  {Number(event.presupuesto).toLocaleString()} €
+                </span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.label}>Señal / Reserva:</span>
@@ -133,31 +142,31 @@ export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
               </div>
               
               {Number(event.senal) > 0 && (
-                <div className={styles.infoRow}>
+                <div className={`${styles.infoRow} ${styles.senalRow}`}>
                   <span className={styles.label}>Estado de Señal:</span>
-                  <span className={styles.value}>
+                  <div className={styles.senalValueWrapper}>
                     {event.senal_repartida ? (
-                      <span style={{ color: 'green', fontWeight: 'bold' }}>
-                        ✓ Señal repartida por {event.cobrador}
+                      <span className={styles.senalRepartidaText}>
+                        <span>✓ Repartida por {event.cobrador}</span>
                         <button 
                           onClick={() => handleToggleRepartida(false)}
-                          style={{ marginLeft: '10px', fontSize: '0.8rem', padding: '2px 5px', cursor: 'pointer', background: '#ffebee', color: '#c62828', border: 'none', borderRadius: '4px' }}
+                          className={styles.unmarkBtn}
                         >
                           Desmarcar
                         </button>
                       </span>
                     ) : (
-                      <span>
-                        Cobrada por: {event.cobrador}
+                      <span className={styles.senalPendienteText}>
+                        <span>Cobrada por: {event.cobrador}</span>
                         <button 
                           onClick={() => handleToggleRepartida(true)}
-                          style={{ marginLeft: '10px', fontSize: '0.8rem', padding: '2px 5px', cursor: 'pointer', background: '#e8f5e9', color: '#2e7d32', border: 'none', borderRadius: '4px' }}
+                          className={styles.markBtn}
                         >
-                          Marcar como repartida
+                          Marcar repartida
                         </button>
                       </span>
                     )}
-                  </span>
+                  </div>
                 </div>
               )}
               <div className={styles.infoRow}>
@@ -177,14 +186,22 @@ export const EventDetailModal = ({ event, onClose, onUpdate, onEdit }) => {
 
         <footer className={styles.footer}>
           <div className={styles.leftActions}>
-             <button className={styles.deleteBtn} onClick={handleDelete}>Borrar Evento</button>
-             <button className={styles.editBtn} onClick={handleEdit}>Editar Datos</button>
+            <button className={styles.deleteBtn} onClick={handleDelete}>
+              🗑️ Borrar Evento
+            </button>
+            <button className={styles.editBtn} onClick={handleEdit}>
+              ✏️ Editar Datos
+            </button>
           </div>
           <div className={styles.rightActions}>
             {isNegotiation && (
-              <button className={styles.confirmBtn} onClick={handleConfirm}>Confirmar Venta</button>
+              <button className={styles.confirmBtn} onClick={handleConfirm}>
+                🤝 Confirmar Venta
+              </button>
             )}
-            <button className={styles.doneBtn} onClick={onClose}>Cerrar</button>
+            <button className={styles.doneBtn} onClick={onClose}>
+              Cerrar
+            </button>
           </div>
         </footer>
       </div>

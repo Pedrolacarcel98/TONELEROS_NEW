@@ -80,7 +80,6 @@ export default function Integrations() {
       <main className={styles.main}>
         <div className={styles.header}>
           <h1>Integraciones n8n</h1>
-          <a href="#/" className={styles.backBtn}>← Volver al Dashboard</a>
         </div>
 
         <div className={styles.grid}>

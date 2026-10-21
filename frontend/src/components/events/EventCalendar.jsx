@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import styles from './EventCalendar.module.css';
 import { parseLocalDate } from '../../utils/dateUtils';
+import { getVacationsForDay } from '../../utils/vacationUtils';
 
-const EventCalendar = ({ events, onEventClick }) => {
+const EventCalendar = ({ events = [], vacations = [], onEventClick }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
 
@@ -30,10 +31,11 @@ const EventCalendar = ({ events, onEventClick }) => {
     
     // Días del mes anterior para rellenar la primera fila
     for (let i = firstDay - 1; i >= 0; i--) {
+      const prevDate = new Date(year, month - 1, daysInPrevMonth - i);
       calendarDays.push({
-        day: daysInPrevMonth - i,
-        month: month - 1,
-        year: year,
+        day: prevDate.getDate(),
+        month: prevDate.getMonth(),
+        year: prevDate.getFullYear(),
         currentMonth: false
       });
     }
@@ -51,10 +53,11 @@ const EventCalendar = ({ events, onEventClick }) => {
     // Días del mes siguiente para completar la última fila (hasta 42 celdas = 6 semanas)
     const remainingDays = 42 - calendarDays.length;
     for (let i = 1; i <= remainingDays; i++) {
+      const nextDate = new Date(year, month + 1, i);
       calendarDays.push({
-        day: i,
-        month: month + 1,
-        year: year,
+        day: nextDate.getDate(),
+        month: nextDate.getMonth(),
+        year: nextDate.getFullYear(),
         currentMonth: false
       });
     }
@@ -92,20 +95,41 @@ const EventCalendar = ({ events, onEventClick }) => {
     return getEventsForDay(selectedDate.getDate(), selectedDate.getMonth(), selectedDate.getFullYear());
   }, [selectedDate, events]);
 
-  const formatTime = (dateString) => {
-    const date = new Date(dateString);
-    return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  const selectedDayVacations = useMemo(() => {
+    return getVacationsForDay(selectedDate.getDate(), selectedDate.getMonth(), selectedDate.getFullYear(), vacations);
+  }, [selectedDate, vacations]);
+
+  const formatShortRange = (v) => {
+    const s = parseLocalDate(v.start_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    if (v.is_single_day || !v.end_date || v.start_date === v.end_date) {
+      return `Día único (${s})`;
+    }
+    const e = parseLocalDate(v.end_date).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+    return `${s} - ${e}`;
   };
 
   return (
     <div className={styles.calendarContainer}>
       <header className={styles.calendarHeader}>
-        <h2 className={styles.monthTitle}>
-          {months[currentDate.getMonth()]} {currentDate.getFullYear()}
-        </h2>
+        <div className={styles.headerTitleGroup}>
+          <h2 className={styles.monthTitle}>
+            {months[currentDate.getMonth()]} {currentDate.getFullYear()}
+          </h2>
+          <div className={styles.legend}>
+            <span className={styles.legendItem}>
+              <span className={`${styles.legendDot} ${styles.dotConfirmed}`} /> Confirmado
+            </span>
+            <span className={styles.legendItem}>
+              <span className={`${styles.legendDot} ${styles.dotNegotiation}`} /> Negociación
+            </span>
+            <span className={styles.legendItem}>
+              <span className={`${styles.legendDot} ${styles.dotVacation}`} /> Vacaciones
+            </span>
+          </div>
+        </div>
         <div className={styles.navButtons}>
           <button onClick={prevMonth} className={styles.navButton}>&lt;</button>
-          <button onClick={() => setCurrentDate(new Date())} className={styles.navButton}>Hoy</button>
+          <button onClick={() => { const now = new Date(); setCurrentDate(now); setSelectedDate(now); }} className={styles.navButton}>Hoy</button>
           <button onClick={nextMonth} className={styles.navButton}>&gt;</button>
         </div>
       </header>
@@ -117,6 +141,9 @@ const EventCalendar = ({ events, onEventClick }) => {
         
         {calendarData.map((item, index) => {
           const dayEvents = getEventsForDay(item.day, item.month, item.year);
+          const dayVacations = getVacationsForDay(item.day, item.month, item.year, vacations);
+          const hasVacations = dayVacations.length > 0;
+
           return (
             <div 
               key={index} 
@@ -125,22 +152,41 @@ const EventCalendar = ({ events, onEventClick }) => {
                 ${!item.currentMonth ? styles.notCurrentMonth : ''} 
                 ${isToday(item.day, item.month, item.year) ? styles.today : ''}
                 ${isSelected(item.day, item.month, item.year) ? styles.selected : ''}
+                ${hasVacations && item.currentMonth ? styles.dayWithVacation : ''}
               `}
               onClick={() => setSelectedDate(new Date(item.year, item.month, item.day))}
             >
               <span className={styles.dayNumber}>{item.day}</span>
               <div className={styles.eventsListInCell}>
-                {dayEvents.slice(0, 3).map(event => (
+                {dayEvents.slice(0, 2).map(event => (
                   <div 
-                    key={event.id} 
+                    key={`ev-${event.id}`} 
                     className={`${styles.eventMiniTag} ${event.estado === 'CONFIRMADO' ? styles.confirmed : ''}`}
+                    title={`${event.tipo} (${event.hora_comienzo || 'Sin hora'})`}
                   >
                     {event.tipo}
                   </div>
                 ))}
-                {dayEvents.length > 3 && (
-                  <div className={styles.eventMiniTag} style={{background: 'transparent', color: '#718096'}}>
-                    +{dayEvents.length - 3} más
+                {dayEvents.length > 2 && (
+                  <div className={styles.moreMiniTag}>
+                    +{dayEvents.length - 2} ev.
+                  </div>
+                )}
+
+                {dayVacations.length === 1 && (
+                  <div 
+                    className={styles.vacationMiniTag}
+                    title={`Vacaciones: ${dayVacations[0].member_name}${dayVacations[0].description ? ' - ' + dayVacations[0].description : ''}`}
+                  >
+                    🏖️ {dayVacations[0].member_name}
+                  </div>
+                )}
+                {dayVacations.length > 1 && (
+                  <div 
+                    className={styles.vacationMiniTag}
+                    title={`Vacaciones: ${dayVacations.map(v => v.member_name).join(', ')}`}
+                  >
+                    🏖️ {dayVacations.map(v => v.member_name).join(', ')}
                   </div>
                 )}
               </div>
@@ -151,15 +197,15 @@ const EventCalendar = ({ events, onEventClick }) => {
 
       <div className={styles.dayDetailView}>
         <h3 className={styles.detailHeader}>
-          Eventos para el {selectedDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long' })}
+          Agenda para el {selectedDate.toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' })}
         </h3>
-        {selectedDayEvents.length > 0 ? (
+        {(selectedDayEvents.length > 0 || selectedDayVacations.length > 0) ? (
           <div className={styles.detailEventsList}>
             {selectedDayEvents.map(event => {
               const isConfirmed = event.estado === 'CONFIRMADO';
               return (
                 <div 
-                  key={event.id} 
+                  key={`detail-ev-${event.id}`} 
                   className={`${styles.detailEventItem} ${isConfirmed ? styles.detailConfirmed : styles.detailNegotiation}`}
                   onClick={() => onEventClick(event)}
                 >
@@ -174,9 +220,30 @@ const EventCalendar = ({ events, onEventClick }) => {
                 </div>
               );
             })}
+
+            {selectedDayVacations.map(v => (
+              <div 
+                key={`detail-vac-${v.id}`} 
+                className={`${styles.detailEventItem} ${styles.detailVacation}`}
+              >
+                <div className={styles.detailVacationContent}>
+                  <div className={styles.detailEventInfo}>
+                    <span className={styles.vacationBadge}>🏖️ VACACIONES</span>
+                    <span className={styles.detailDivider}>|</span>
+                    <span className={styles.detailType}>{v.member_name}</span>
+                  </div>
+                  <div className={styles.detailVacationMeta}>
+                    <span>{formatShortRange(v)}</span>
+                    {v.description && (
+                      <span className={styles.detailVacationDesc}> • "{v.description}"</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : (
-          <p className={styles.noEventsText}>No hay eventos programados para este día.</p>
+          <p className={styles.noEventsText}>No hay eventos ni vacaciones registrados para este día.</p>
         )}
       </div>
     </div>

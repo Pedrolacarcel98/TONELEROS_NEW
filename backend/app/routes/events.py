@@ -59,26 +59,16 @@ async def enviar_reparto_a_n8n(datos: dict):
 
 
 @router.get("/", response_model=List[EventResponse])
-def list_events(history: bool = False, db: Session = Depends(get_db)):
+def list_events(history: bool = False, all_events: bool = False, db: Session = Depends(get_db)):
+    if all_events:
+        return db.query(Event).order_by(Event.fecha.asc()).all()
     """
     Return events.
     - If history=False (default): Returns upcoming events (fecha >= today) and not archived.
     - If history=True: Returns past events (fecha < today) or already archived ones.
     """
-    # Usar el inicio del día para que los eventos de hoy no se archiven a mitad del día
+    # Usar el inicio del día para que los eventos de hoy no se consideren pasados a mitad del día
     now = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    
-    # Auto-archive past events that aren't archived yet
-    # We do this on the fly when listing
-    past_events = db.query(Event).filter(
-        Event.fecha < now,
-        Event.archivado == False
-    ).all()
-    
-    if past_events:
-        for event in past_events:
-            event.archivado = True
-        db.commit()
 
     if history:
         # Show history: past dates or explicitly archived

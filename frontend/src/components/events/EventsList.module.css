@@ -147,6 +147,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 8px;
+}
+
+.headerBadges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .typeBadge {
@@ -163,6 +171,29 @@
 .negotiationBadge {
   background: #facc15;
   color: #000;
+}
+
+.soundBadge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.soundBadgeOurs {
+  background: rgba(56, 189, 248, 0.16);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.35);
+}
+
+.soundBadgeClient {
+  background: rgba(148, 163, 184, 0.12);
+  color: #94a3b8;
+  border: 1px solid rgba(148, 163, 184, 0.22);
 }
 
 .time {
@@ -199,9 +230,23 @@
 }
 
 .price {
-  font-size: 1rem;
+  font-size: 0.95rem;
   font-weight: 800;
-  color: var(--accent);
+  padding: 4px 10px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s ease;
+  letter-spacing: 0.02em;
+}
+
+.tablePriceBadge {
+  font-size: 0.9rem;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  letter-spacing: 0.02em;
 }
 
 .cardHover {

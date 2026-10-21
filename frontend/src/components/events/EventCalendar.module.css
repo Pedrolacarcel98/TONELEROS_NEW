@@ -13,6 +13,14 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.headerTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
 }
 
 .monthTitle {
@@ -20,6 +28,42 @@
   font-weight: 700;
   color: var(--text-primary);
   text-transform: capitalize;
+  margin: 0;
+}
+
+.legend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.legendItem {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.dotConfirmed {
+  background: var(--success, #10b981);
+}
+
+.dotNegotiation {
+  background: var(--accent, #facc15);
+}
+
+.dotVacation {
+  background: #94a3b8;
 }
 
 .navButtons {
@@ -78,6 +122,10 @@
   background: rgba(255, 255, 255, 0.03);
 }
 
+.dayWithVacation {
+  background: rgba(148, 163, 184, 0.04);
+}
+
 .dayNumber {
   font-size: 0.9rem;
   font-weight: 500;
@@ -115,7 +163,7 @@
   z-index: 1;
 }
 
-/* Event Indicators in Grid */
+/* Event & Vacation Indicators in Grid */
 .eventsListInCell {
   display: flex;
   flex-direction: column;
@@ -141,6 +189,27 @@
   color: white;
 }
 
+/* Etiqueta grisácea para vacaciones en la celda del calendario */
+.vacationMiniTag {
+  font-size: 0.64rem;
+  padding: 1px 5px;
+  border-radius: 3px;
+  background: rgba(148, 163, 184, 0.22);
+  color: #cbd5e1;
+  border-left: 2px solid #94a3b8;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.moreMiniTag {
+  font-size: 0.62rem;
+  color: #94a3b8;
+  padding: 0 2px;
+}
+
 /* Detail View below calendar */
 .dayDetailView {
   margin-top: 2rem;
@@ -161,7 +230,6 @@
   gap: 1rem;
 }
 
-/* Fix for the "Green Circle" bug - New Class */
 .detailEventItem {
   padding: 1rem 1.25rem;
   border-radius: 12px;
@@ -197,6 +265,49 @@
 .detailNegotiation:hover {
   background: rgba(250, 204, 21, 0.15);
   border-color: #facc15;
+}
+
+/* Tarjeta grisácea para vacaciones en el desglose del día */
+.detailVacation {
+  background: rgba(148, 163, 184, 0.12);
+  color: #cbd5e1;
+  border-left: 4px solid #94a3b8;
+  border-top: 1px solid rgba(148, 163, 184, 0.18);
+  border-right: 1px solid rgba(148, 163, 184, 0.18);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.18);
+  cursor: default;
+}
+
+.detailVacation:hover {
+  background: rgba(148, 163, 184, 0.18);
+  transform: none;
+}
+
+.detailVacationContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+}
+
+.vacationBadge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  color: #e2e8f0;
+  background: rgba(148, 163, 184, 0.22);
+  padding: 2px 7px;
+  border-radius: 4px;
+}
+
+.detailVacationMeta {
+  font-size: 0.82rem;
+  color: #94a3b8;
+}
+
+.detailVacationDesc {
+  font-style: italic;
+  color: #cbd5e1;
 }
 
 .detailEventInfo {
@@ -243,7 +354,7 @@
   }
 
   .dayCell {
-    min-height: 50px;
+    min-height: 54px;
     padding: 2px;
   }
   
@@ -258,14 +369,20 @@
     font-size: 0.7rem;
   }
   
-  /* Dots only for the grid tags */
-  .eventMiniTag {
-    height: 5px;
-    width: 5px;
+  /* Dots only for the grid tags on mobile */
+  .eventMiniTag,
+  .vacationMiniTag {
+    height: 6px;
+    width: 6px;
     border-radius: 50%;
     padding: 0;
     font-size: 0;
     margin: 1px auto;
+    border: none;
+  }
+
+  .vacationMiniTag {
+    background: #94a3b8;
   }
   
   .eventsListInCell {
