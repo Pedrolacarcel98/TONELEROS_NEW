@@ -11,7 +11,6 @@ const Documents = lazy(() => import('./pages/Documents'));
 const DocumentViewer = lazy(() => import('./pages/DocumentViewer'));
 const Media = lazy(() => import('./pages/Media'));
 const Clients = lazy(() => import('./pages/Clients'));
-const Integrations = lazy(() => import('./pages/Integrations'));
 const Vacations = lazy(() => import('./pages/Vacations'));
 
 // Componente de fallback mientras se descarga el chunk de la página
@@ -70,7 +69,7 @@ function App() {
     if (currentHash === '#/events') {
       return <Events />;
     }
-    if (currentHash === '#/finance') {
+    if (currentHash === '#/finance' || currentHash === '#/stats') {
       return <Finance />;
     }
     if (currentHash === '#/documents') {
@@ -84,9 +83,6 @@ function App() {
     }
     if (currentHash.startsWith('#/documents/view/')) {
       return <DocumentViewer />;
-    }
-    if (currentHash === '#/integrations') {
-      return <Integrations />;
     }
     if (currentHash === '#/vacations') {
       return <Vacations />;

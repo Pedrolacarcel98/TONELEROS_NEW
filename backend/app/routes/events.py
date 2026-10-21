@@ -59,7 +59,9 @@ async def enviar_reparto_a_n8n(datos: dict):
 
 
 @router.get("/", response_model=List[EventResponse])
-def list_events(history: bool = False, db: Session = Depends(get_db)):
+def list_events(history: bool = False, all_events: bool = False, db: Session = Depends(get_db)):
+    if all_events:
+        return db.query(Event).order_by(Event.fecha.asc()).all()
     """
     Return events.
     - If history=False (default): Returns upcoming events (fecha >= today) and not archived.

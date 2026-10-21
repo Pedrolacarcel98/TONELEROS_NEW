@@ -1,7 +1,0 @@
-P. WARDEN AND D. SITUNAYAKE, TINYML: MACHINE LEARNING WITH TENSORFLOW LITE ON ARDUINO AND ULTRA-LOW-POWER MICROCONTROLLERS. SEBASTOPOL, CA: O'REILLY MEDIA, 2020.
-
-https://www.st.com/resource/en/reference_manual/rm0351-stm32l47xxx-stm32l48xxx-stm32l49xxx-and-stm32l4axxx-advanced-armbased-32bit-mcus-stmicroelectronics.pdf
-
-M. Shafique et al., "An Overview of Next-Generation TinyML Hardware: Challenges and Opportunities," in Proc. IEEE International Conference on Artificial Intelligence Circuits and Systems (AICAS), 2021, pp. 1-4.
-
-[4] I. Goodfellow, Y. Bengio, and A. Courville, Deep Learning. Cambridge, MA: MIT Press, 2016.

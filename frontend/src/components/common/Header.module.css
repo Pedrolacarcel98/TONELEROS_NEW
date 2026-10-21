@@ -1,14 +1,21 @@
 .header {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border);
   position: sticky;
   top: 0;
   z-index: 1000;
-  height: 70px;
+  height: 72px;
   display: flex;
   align-items: center;
+  width: 100%;
+}
+
+.headerContainer {
+  width: 100%;
+  padding: 0 28px;
+  box-sizing: border-box;
 }
 
 .innerHeader {
@@ -16,156 +23,346 @@
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  position: relative;
 }
 
-/* Left Section */
-.left {
-  flex: 1;
+/* Lado Izquierdo: 3 Rayas y Título */
+.leftSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  position: relative;
+}
+
+/* Botón 3 Rayas (Hamburguesa) */
+.hamburgerBtn {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.hamburgerBtn:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: var(--accent);
+  color: #fff;
+  transform: scale(1.04);
+}
+
+.hamburgerBtnActive {
+  background: var(--accent);
+  color: #000 !important;
+  border-color: var(--accent);
+  box-shadow: 0 0 14px rgba(56, 189, 248, 0.4);
+}
+
+.hamburgerIcon {
+  width: 25px;
+  height: 25px;
+  stroke: currentColor;
+  transition: transform 0.2s ease;
+}
+
+/* Título de sección opcional a la izquierda */
+.titleWrapper {
   display: flex;
   align-items: center;
 }
 
-.backBtn {
-  background: rgba(255, 255, 255, 0.05);
+.pageTitle {
+  font-weight: 700;
+  font-size: 1.15rem;
   color: var(--text-primary);
-  padding: 8px 16px;
-  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px 14px;
   border-radius: 10px;
-  border: 1px solid var(--border);
-  transition: all 0.2s ease;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* Lado Derecho: Logo oficial de Toneleros */
+.rightSection {
+  display: flex;
+  align-items: center;
+}
+
+.logoWrapper {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  padding: 4px;
+  border-radius: 10px;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.logoWrapper:hover {
+  transform: scale(1.03);
+  opacity: 0.95;
+}
+
+.logoImg {
+  height: 44px;
+  width: auto;
+  max-width: 170px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+}
+
+.logoFallback {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.backBtn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--accent);
-  transform: translateX(-3px);
-}
-
-.arrow {
-  font-size: 1.2rem;
-  line-height: 1;
-}
-
-.backText {
-  font-weight: 600;
-}
-
-/* Logo Styling */
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  cursor: pointer;
-}
-
-.logoIcon {
+.fallbackIcon {
   font-size: 1.5rem;
 }
 
-.logoText {
+.fallbackText {
   font-weight: 800;
   letter-spacing: 0.1em;
   font-size: 1.2rem;
   color: var(--text-primary);
 }
 
-/* Center Section (Symmetry) */
-.centerSection {
-  flex: 1;
+/* Backdrop para cerrar al hacer clic o tap fuera */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  z-index: 1050;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Menú Desplegable Flotante Anclado a la Izquierda */
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 0;
+  width: 320px;
+  background: rgba(20, 27, 45, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 18px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06);
+  padding: 16px;
+  z-index: 1100;
+  animation: slideDown 0.24s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.dropdownHeader {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
+  padding: 2px 6px 12px 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 10px;
+}
+
+.dropdownTitle {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-secondary);
+}
+
+.closeMenuBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: color 0.15s;
+}
+
+.closeMenuBtn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.navGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 60vh;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 11px 14px;
+  background: transparent;
+  border: none;
+  border-radius: 12px;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-align: left;
+  width: 100%;
+}
+
+.navItem:hover {
+  background: rgba(255, 255, 255, 0.09);
+  transform: translateX(4px);
+  color: #fff;
+}
+
+.navItemActive {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  font-weight: 700;
+  border-left: 3px solid #38bdf8;
+}
+
+.navIcon {
+  font-size: 1.3rem;
+  line-height: 1;
+  width: 26px;
   text-align: center;
 }
 
-.centerLogo {
-  cursor: pointer;
-}
-
-.centerLogo .logoText {
-  font-size: 1.1rem;
-  opacity: 0.8;
-}
-
-.pageTitle {
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--text-primary);
-  letter-spacing: 0.02em;
-}
-
-/* Right Section */
-.right {
+.navLabel {
   flex: 1;
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
 }
 
-.userInfo {
-  display: flex;
-  align-items: center;
-  gap: 16px;
+.activePill {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(56, 189, 248, 0.24);
+  color: #38bdf8;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
 }
 
-.email {
-  color: var(--text-secondary);
+.dropdownDivider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 12px 0;
+}
+
+.menuFooter {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-top: 4px;
+}
+
+.userInfoBlock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
   font-size: 0.85rem;
-  font-weight: 500;
-  text-transform: capitalize;
+  color: var(--text-secondary);
+}
+
+.avatarIcon {
+  font-size: 1.1rem;
+}
+
+.fullEmail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: 600;
 }
 
 .logoutBtn {
-  background: var(--accent);
-  color: var(--bg-color);
-  padding: 6px 16px;
-  font-size: 0.85rem;
-  border-radius: 8px;
+  background: rgba(239, 68, 68, 0.14);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.28);
+  border-radius: 12px;
+  padding: 11px 16px;
+  font-size: 0.92rem;
   font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: center;
 }
 
 .logoutBtn:hover {
-  filter: brightness(0.9);
+  background: rgba(239, 68, 68, 0.26);
+  color: #f87171;
 }
 
-/* Responsive Tweaks */
+/* Ajustes Responsive para Móviles */
 @media (max-width: 768px) {
   .header {
-    height: 65px;
-  }
-  
-  .backBtn {
-    padding: 8px; /* Square button on mobile */
-    min-width: 40px;
-    justify-content: center;
+    height: 66px;
   }
 
-  .backText {
-    display: none; /* Hide text, keep arrow for space */
+  .headerContainer {
+    padding: 0 16px;
   }
-  
-  .email {
-    display: none;
+
+  .hamburgerBtn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .hamburgerIcon {
+    width: 22px;
+    height: 22px;
   }
 
   .pageTitle {
-    font-size: 1rem;
+    display: none; /* En móvil dejamos todo el espacio al menú y al logo */
   }
-}
 
-@media (max-width: 480px) {
-  .logoText {
-    font-size: 1rem;
+  .logoImg {
+    height: 38px;
+    max-width: 140px;
   }
-  
-  .logoIcon {
-    font-size: 1.2rem;
-  }
-  
-  .centerLogo {
-    display: none; /* Hide Toneleros text on very small screens if no title */
+
+  .dropdownMenu {
+    position: fixed;
+    top: 70px;
+    left: 12px;
+    right: 12px;
+    width: auto;
+    max-height: calc(100vh - 86px);
   }
 }

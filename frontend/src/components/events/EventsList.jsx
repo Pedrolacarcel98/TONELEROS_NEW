@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import styles from './EventsList.module.css';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import EventDetailModal from './EventDetailModal';
 import { checkVacationOverlap } from '../../utils/vacationUtils';
 import { parseLocalDate } from '../../utils/dateUtils';
+import { getEventPriceGradient } from '../../utils/pricingUtils';
 
 export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [], viewMode = 'cards' }) => {
   const [selectedEvent, setSelectedEvent] = useState(null);
@@ -60,6 +61,7 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [], vie
                   const isNegotiation = ev.estado === 'NEGOCIACION';
                   const isArchived = ev.archivado;
                   const overlaps = checkVacationOverlap(ev.fecha, vacations);
+                  const priceGrad = getEventPriceGradient(ev.presupuesto, ev.equipo);
 
                   return (
                     <div 
@@ -85,9 +87,17 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [], vie
 
                       <div className={styles.cardInfo}>
                         <div className={styles.cardHeader}>
-                          <span className={`${styles.typeBadge} ${isNegotiation ? styles.negotiationBadge : ''}`}>
-                            {isArchived ? '📁 Archivado' : (isNegotiation ? '⌛ Negociación' : ev.tipo)}
-                          </span>
+                          <div className={styles.headerBadges}>
+                            <span className={`${styles.typeBadge} ${isNegotiation ? styles.negotiationBadge : ''}`}>
+                              {isArchived ? '📁 Archivado' : (isNegotiation ? '⌛ Negociación' : ev.tipo)}
+                            </span>
+                            <span
+                              className={`${styles.soundBadge} ${ev.equipo ? styles.soundBadgeOurs : styles.soundBadgeClient}`}
+                              title={ev.equipo ? 'Equipo de sonido: Lo llevamos nosotros' : 'Equipo de sonido: Lo pone el cliente'}
+                            >
+                              🔊 {ev.equipo ? 'Nosotros' : 'Cliente'}
+                            </span>
+                          </div>
                           <span className={styles.time}>{ev.hora_comienzo || '--:--'}</span>
                         </div>
                         
@@ -95,7 +105,18 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [], vie
                         
                         <div className={styles.cardFooter}>
                           <span className={styles.contact}>👤 {ev.pContacto}</span>
-                          <span className={styles.price}>{Number(ev.presupuesto).toLocaleString()} €</span>
+                          <span 
+                            className={styles.price}
+                            style={{
+                              background: priceGrad.background,
+                              color: priceGrad.color,
+                              border: `1px solid ${priceGrad.border}`,
+                              boxShadow: priceGrad.glow,
+                            }}
+                            title={`Rentabilidad: ${priceGrad.badgeText} (Media con sonido ${priceGrad.soundOrigin}: ${priceGrad.target} €)`}
+                          >
+                            {Number(ev.presupuesto).toLocaleString()} €
+                          </span>
                         </div>
                       </div>
                       
@@ -114,6 +135,7 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [], vie
                       <th>Día</th>
                       <th>Hora</th>
                       <th>Estado / Tipo</th>
+                      <th>Sonido</th>
                       <th>Dirección / Lugar</th>
                       <th>Contacto</th>
                       <th className={styles.textRight}>Ppto.</th>
@@ -126,6 +148,7 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [], vie
                       const pending = Number(ev.presupuesto) - Number(ev.senal);
                       const isNegotiation = ev.estado === 'NEGOCIACION';
                       const overlaps = checkVacationOverlap(ev.fecha, vacations);
+                      const priceGrad = getEventPriceGradient(ev.presupuesto, ev.equipo);
 
                       return (
                         <tr key={ev.id} onClick={() => setSelectedEvent(ev)} className={`${styles.tableRow} ${isNegotiation ? styles.negotiationRow : ''}`}>
@@ -153,12 +176,30 @@ export const EventsList = ({ onEdit, onRefresh, events = [], vacations = [], vie
                               {isNegotiation ? 'Negociación' : ev.tipo}
                             </span>
                           </td>
+                          <td>
+                            <span className={`${styles.soundBadge} ${ev.equipo ? styles.soundBadgeOurs : styles.soundBadgeClient}`}>
+                              🔊 {ev.equipo ? 'Nosotros' : 'Cliente'}
+                            </span>
+                          </td>
                           <td className={styles.tableAddress}>{ev.direccion}</td>
                           <td className={styles.tableContact}>
                             <div>{ev.pContacto}</div>
                             <small>{ev.tlf}</small>
                           </td>
-                          <td className={styles.textRight}><strong>{Number(ev.presupuesto).toLocaleString()} €</strong></td>
+                          <td className={styles.textRight}>
+                            <span 
+                              className={styles.tablePriceBadge}
+                              style={{
+                                background: priceGrad.background,
+                                color: priceGrad.color,
+                                border: `1px solid ${priceGrad.border}`,
+                                boxShadow: priceGrad.glow,
+                              }}
+                              title={`Rentabilidad: ${priceGrad.badgeText} (Media con sonido ${priceGrad.soundOrigin}: ${priceGrad.target} €)`}
+                            >
+                              {Number(ev.presupuesto).toLocaleString()} €
+                            </span>
+                          </td>
                           <td className={styles.textRight}>
                             {pending > 0 ? (
                               <span className={styles.pendingBadge}>-{pending} €</span>
