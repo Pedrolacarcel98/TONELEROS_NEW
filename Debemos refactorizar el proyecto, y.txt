@@ -1,0 +1,19 @@
+Debemos refactorizar el proyecto, ya que el tiempo real y el wifi no se llevan del todo bien.  debemos dejarle el grueso del
+      sistema a la STM32. Por ello se debe seguir el siguiente flujo:
+
+1. nueva función iniciar programa con botón user de mi placa --> tienes un proyecto de ejemplo llamado "PruebasLedUserButton" en el que se usa el botón con iterrupciones para iniciar un programa sencillo, debes basarte en el y escalarlo para que haga lo siguiente:
+
+- al encender la STM espera a que el botón USER se pulse (B1)
+- Al pulsarle inicia el modelo, empieza a recoger datos del acelerómetro e interppreta, actuando sobre los leds como ya hace
+- El programa va guardando datos en memoria sobre los estados cada cierto tiempo según el reloj del programa (cada 100ms no estaria mal) 
+- al volver a pulsar el botón el programa pasara por la UART los datos recogidos hacia la ESP32 y se detendrá el programa, pasando esperar de nuevo la pulsación para iniciar de nuevo el modelo y recogida de datos
+
+2. la ESP32 recibe los datos y los pasa manteniendo el formato hacia el servidor PC.
+
+3. El servidor PC se refactorizara de la siguiente forma: la interfaz grafica mostrara el estado de la conexión con la ESP, cuando el programa se detenga, es decir, cuando la ESP32 reciba los datos, el PC los recibirá mostrando un aviso de datos obtenidos, realizara un siistema de métricas sencillas con porcentajes como ya lo hace.
+
+
+Resumen: la refactorización consiste en eliminar el tiempo real en el servidor, solo se debe ver el estado de la conexión y la recepción correcta de los datos. además se incluye la nueva funcionalidad de incio y pausa del modelo mediante el botón USER.
+
+tomate el tiempo que necesites para refactorizar, basate en el pryecyo de ejemplo para manejar conrrrectamente el botón USER de la STM32
+

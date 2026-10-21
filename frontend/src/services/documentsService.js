@@ -11,6 +11,12 @@ const documentsService = {
     const res = await apiClient.get('/documents/');
     return res.data;
   },
+  fetchArrayBuffer: async (doc) => {
+    const res = await apiClient.get(`/documents/${doc.id}/download`, {
+      responseType: 'arraybuffer'
+    });
+    return res.data;
+  },
   downloadUrl: (doc) => {
     // Prefer the API download endpoint (works regardless of uploads mount)
     try {

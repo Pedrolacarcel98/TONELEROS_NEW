@@ -33,7 +33,7 @@ export const Events = () => {
       setEvents(eventsData);
       setVacations(vacationsData);
       if (selectedEvent) {
-        const updatedSelected = data.find(e => e.id === selectedEvent.id);
+        const updatedSelected = eventsData.find(e => e.id === selectedEvent.id);
         if (updatedSelected) {
           setSelectedEvent(updatedSelected);
         }
@@ -175,6 +175,7 @@ export const Events = () => {
             {view === 'calendar' ? (
               <EventCalendar 
                 events={events} 
+                vacations={vacations}
                 onEventClick={handleEventClick}
               />
             ) : (

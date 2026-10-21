@@ -25,7 +25,16 @@ async def upload_document(file: UploadFile = File(...), db: Session = Depends(ge
         with open(dest_path, 'wb') as f:
             shutil.copyfileobj(file.file, f)
 
-        doc = Document(stored_name=stored_name, original_name=file.filename, mime_type=file.content_type, size=os.path.getsize(dest_path))
+        mime_type = file.content_type
+        if (not mime_type or mime_type == 'application/octet-stream') and ext.lower() == '.pdf':
+            mime_type = 'application/pdf'
+
+        doc = Document(
+            stored_name=stored_name,
+            original_name=file.filename,
+            mime_type=mime_type,
+            size=os.path.getsize(dest_path)
+        )
         db.add(doc)
         db.commit()
         db.refresh(doc)
@@ -65,10 +74,15 @@ def download_document(doc_id: int, db: Session = Depends(get_db)):
     path = os.path.join(UPLOAD_DIR, doc.stored_name)
     if not os.path.exists(path):
         raise HTTPException(status_code=404, detail='File missing on server')
+
+    media_type = doc.mime_type or 'application/octet-stream'
+    if media_type == 'application/octet-stream' and doc.original_name and doc.original_name.lower().endswith('.pdf'):
+        media_type = 'application/pdf'
+
     # Use content_disposition_type="inline" to allow browser viewing
     return FileResponse(
         path, 
-        media_type=doc.mime_type or 'application/octet-stream',
+        media_type=media_type,
         content_disposition_type="inline"
     )
 
